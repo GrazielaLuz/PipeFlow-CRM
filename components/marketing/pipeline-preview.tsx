@@ -45,13 +45,13 @@ const stages = [
 
 export function PipelinePreview() {
   return (
-    <section className="overflow-hidden bg-white py-24">
+    <section className="overflow-hidden bg-white py-24 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
             Pipeline visual em tempo real
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
             Todas as etapas do funil de vendas na mesma tela. Arraste os cards para atualizar o
             progresso instantaneamente.
           </p>
@@ -60,12 +60,12 @@ export function PipelinePreview() {
         <div className="relative">
           {/* Glow background */}
           <div
-            className="absolute -inset-6 rounded-3xl bg-gradient-to-b from-blue-50 to-white"
+            className="absolute -inset-6 rounded-3xl bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-950"
             aria-hidden="true"
           />
 
           {/* Board mockup */}
-          <div className="relative overflow-x-auto rounded-2xl border border-gray-200 bg-gray-100 p-4 shadow-inner">
+          <div className="relative overflow-x-auto rounded-2xl border border-gray-200 bg-gray-100 p-4 shadow-inner dark:border-gray-800 dark:bg-gray-900">
             <div className="flex min-w-max gap-3 pb-2">
               {stages.map((stage) => (
                 <div key={stage.name} className="w-52 flex-shrink-0">
@@ -73,9 +73,11 @@ export function PipelinePreview() {
                   <div className="mb-3 flex items-center justify-between px-1">
                     <div className="flex items-center gap-2">
                       <div className={`h-2.5 w-2.5 rounded-full ${stage.dot}`} />
-                      <span className="text-xs font-semibold text-gray-700">{stage.name}</span>
+                      <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                        {stage.name}
+                      </span>
                     </div>
-                    <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-500">
+                    <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400">
                       {stage.count}
                     </span>
                   </div>
@@ -85,13 +87,19 @@ export function PipelinePreview() {
                     {stage.cards.map((card) => (
                       <div
                         key={card.title}
-                        className="cursor-default rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
+                        className="cursor-default rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
                       >
-                        <p className="text-xs font-semibold text-gray-800">{card.title}</p>
-                        <p className="mt-1 text-sm font-bold text-blue-600">{card.value}</p>
-                        <div className="mt-2 flex items-center justify-between border-t border-gray-100 pt-2">
-                          <span className="text-[10px] text-gray-500">{card.lead}</span>
-                          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400">
+                        <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                          {card.title}
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {card.value}
+                        </p>
+                        <div className="mt-2 flex items-center justify-between border-t border-gray-100 pt-2 dark:border-gray-700">
+                          <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                            {card.lead}
+                          </span>
+                          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400 dark:bg-gray-700 dark:text-gray-500">
                             {card.deadline}
                           </span>
                         </div>
@@ -99,7 +107,7 @@ export function PipelinePreview() {
                     ))}
 
                     {/* Add button (decorative) */}
-                    <div className="w-full cursor-default rounded-lg border border-dashed border-gray-300 py-2 text-center text-xs text-gray-400">
+                    <div className="w-full cursor-default rounded-lg border border-dashed border-gray-300 py-2 text-center text-xs text-gray-400 dark:border-gray-700 dark:text-gray-600">
                       + Novo negócio
                     </div>
                   </div>

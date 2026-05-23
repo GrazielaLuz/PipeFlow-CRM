@@ -10,7 +10,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/95">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -18,20 +18,20 @@ export function Navbar() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
               <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="text-lg font-bold text-gray-900">PipeFlow</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-white">PipeFlow</span>
           </Link>
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-8 md:flex">
             <Link
               href="#features"
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
             >
               Funcionalidades
             </Link>
             <Link
               href="#pricing"
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
             >
               Preços
             </Link>
@@ -55,7 +55,7 @@ export function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 md:hidden"
+            className="rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white md:hidden"
             onClick={() => setOpen(!open)}
             aria-label="Abrir menu"
           >
@@ -65,17 +65,17 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {open && (
-          <div className="space-y-1 border-t border-gray-200 py-4 md:hidden">
+          <div className="space-y-1 border-t border-gray-200 py-4 dark:border-gray-800 md:hidden">
             <Link
               href="#features"
-              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
               onClick={() => setOpen(false)}
             >
               Funcionalidades
             </Link>
             <Link
               href="#pricing"
-              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
               onClick={() => setOpen(false)}
             >
               Preços

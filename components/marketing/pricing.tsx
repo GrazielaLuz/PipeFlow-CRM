@@ -27,27 +27,27 @@ const proFeatures = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="bg-gray-50 py-24">
+    <section id="pricing" className="bg-gray-50 py-24 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
             Planos simples e transparentes
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             Comece grátis. Faça upgrade quando precisar crescer.
           </p>
         </div>
 
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-8 md:grid-cols-2">
           {/* Free */}
-          <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="mb-6">
-              <h3 className="mb-1 text-lg font-semibold text-gray-900">Free</h3>
+              <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">Free</h3>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-900">R$ 0</span>
-                <span className="text-gray-500">/mês</span>
+                <span className="text-4xl font-bold text-gray-900 dark:text-white">R$ 0</span>
+                <span className="text-gray-500 dark:text-gray-400">/mês</span>
               </div>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 Para freelancers e times pequenos começando.
               </p>
             </div>
@@ -65,16 +65,18 @@ export function Pricing() {
                   {f.included ? (
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                   ) : (
-                    <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-300" />
+                    <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-300 dark:text-gray-600" />
                   )}
-                  <span className={f.included ? 'text-gray-700' : 'text-gray-400'}>{f.label}</span>
+                  <span className={f.included ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600'}>
+                    {f.label}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Pro */}
-          <div className="relative flex flex-col rounded-2xl border border-blue-600 bg-blue-600 p-8 shadow-xl">
+          <div className="relative flex flex-col rounded-2xl border border-blue-600 bg-blue-600 p-8 shadow-xl dark:border-blue-500 dark:bg-blue-700">
             {/* Badge */}
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
               <span className="rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-white shadow-md">

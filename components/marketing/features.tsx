@@ -41,13 +41,13 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="bg-gray-50 py-24">
+    <section id="features" className="bg-gray-50 py-24 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
             Tudo que você precisa para vender mais
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
             Do primeiro contato ao fechamento, o PipeFlow organiza todo o seu processo comercial em
             um único lugar.
           </p>
@@ -57,13 +57,13 @@ export function Features() {
           {features.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-md"
+              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-700"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-                <Icon className="h-5 w-5 text-blue-600" />
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950">
+                <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="mb-2 text-base font-semibold text-gray-900">{title}</h3>
-              <p className="text-sm leading-relaxed text-gray-600">{description}</p>
+              <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-white">{title}</h3>
+              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{description}</p>
             </div>
           ))}
         </div>
