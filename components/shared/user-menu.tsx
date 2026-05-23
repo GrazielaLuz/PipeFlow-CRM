@@ -1,0 +1,70 @@
+'use client'
+
+import { LogOut, User } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { cn } from '@/lib/utils'
+
+const mockUser = {
+  name: 'Graziela Espíndola',
+  email: 'grazy@empresa.com',
+  avatar_url: '',
+}
+
+export function UserMenu() {
+  const initials = mockUser.name
+    .split(' ')
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className={cn(
+          'flex h-10 w-full items-center gap-2 rounded-lg px-3',
+          'transition-colors hover:bg-sidebar-accent focus-visible:outline-none',
+        )}
+      >
+        <Avatar className="h-6 w-6 shrink-0">
+          <AvatarImage src={mockUser.avatar_url} alt={mockUser.name} />
+          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+        </Avatar>
+        <div className="flex min-w-0 flex-col text-left">
+          <span className="truncate text-sm font-medium leading-none">
+            {mockUser.name}
+          </span>
+          <span className="truncate text-xs text-muted-foreground">
+            {mockUser.email}
+          </span>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" side="top" className="w-56">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium">{mockUser.name}</p>
+            <p className="text-xs text-muted-foreground">{mockUser.email}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="gap-2">
+          <User className="h-4 w-4" />
+          Perfil
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem variant="destructive" className="gap-2">
+          <LogOut className="h-4 w-4" />
+          Sair
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
