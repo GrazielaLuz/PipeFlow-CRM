@@ -32,28 +32,28 @@
 ### Entregas
 
 **Setup do projeto**
-- [ ] `npx create-next-app@latest pipeflow-crm` com TypeScript, Tailwind, App Router
-- [ ] Configurar `tsconfig.json` em strict mode + path aliases (`@/`)
-- [ ] Instalar e inicializar shadcn/ui (`npx shadcn@latest init`)
-- [ ] Adicionar componentes base: `button`, `input`, `label`, `card`, `badge`, `avatar`, `dropdown-menu`, `dialog`, `sheet`, `separator`, `tooltip`, `skeleton`
-- [ ] Configurar fonte Inter via `next/font/google`
-- [ ] Definir CSS variables de brand (azul `blue-600` como primary) em `globals.css`
-- [ ] Criar `types/index.ts` com interfaces: `Workspace`, `Lead`, `Deal`, `Activity`, `Member`, `Subscription`
+- [x] `npx create-next-app@latest pipeflow-crm` com TypeScript, Tailwind, App Router
+- [x] Configurar `tsconfig.json` em strict mode + path aliases (`@/`)
+- [x] Instalar e inicializar shadcn/ui (`npx shadcn@latest init`)
+- [x] Adicionar componentes base: `button`, `input`, `label`, `card`, `badge`, `avatar`, `dropdown-menu`, `dialog`, `sheet`, `separator`, `tooltip`, `skeleton`
+- [x] Configurar fonte Inter via `next/font/google`
+- [x] Definir CSS variables de brand (azul `blue-600` como primary) em `globals.css`
+- [x] Criar `types/index.ts` com interfaces: `Workspace`, `Lead`, `Deal`, `Activity`, `Member`, `Subscription`
 
 **Layout base do CRM (mock estático)**
-- [ ] `app/(app)/layout.tsx` — shell com sidebar fixa e área de conteúdo
-- [ ] `components/shared/sidebar.tsx` — nav links: Dashboard, Leads, Pipeline, Atividades, Configurações
-- [ ] `components/shared/workspace-switcher.tsx` — dropdown com workspace ativo (mock)
-- [ ] `components/shared/user-menu.tsx` — avatar + dropdown com "Perfil" e "Sair"
-- [ ] `components/shared/top-bar.tsx` — barra superior com título da página + ações contextuais
-- [ ] Rotas stub (páginas vazias com `<h1>`): `/dashboard`, `/leads`, `/pipeline`, `/activities`, `/settings`
+- [x] `app/(app)/layout.tsx` — shell com sidebar fixa e área de conteúdo
+- [x] `components/shared/sidebar.tsx` — nav links: Dashboard, Leads, Pipeline, Atividades, Configurações
+- [x] `components/shared/workspace-switcher.tsx` — dropdown com workspace ativo (mock)
+- [x] `components/shared/user-menu.tsx` — avatar + dropdown com "Perfil" e "Sair"
+- [x] `components/shared/top-bar.tsx` — barra superior com título da página + ações contextuais
+- [x] Rotas stub (páginas vazias com `<h1>`): `/dashboard`, `/leads`, `/pipeline`, `/activities`, `/settings`
 
 **Estrutura de pastas**
-- [ ] Criar estrutura completa de pastas conforme `CLAUDE.md` (vazia, mas com `.gitkeep` onde necessário)
-- [ ] `lib/supabase/client.ts`, `lib/supabase/server.ts` — stubs comentados
-- [ ] `.env.local.example` com todas as variáveis do `CLAUDE.md`
+- [x] Criar estrutura completa de pastas conforme `CLAUDE.md` (vazia, mas com `.gitkeep` onde necessário)
+- [x] `lib/supabase/client.ts`, `lib/supabase/server.ts` — stubs comentados
+- [x] `.env.local.example` com todas as variáveis do `CLAUDE.md`
 
-**Commit final:** `feat: foundation — Next.js scaffold, design system, CRM shell layout`
+**Commit final:** `feat: foundation — Next.js scaffold, design system, CRM shell layout` ✅ mergeado em `main` via PR #1
 
 ---
 
