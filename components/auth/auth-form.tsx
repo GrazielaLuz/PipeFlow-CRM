@@ -30,6 +30,17 @@ export function AuthForm({ mode }: AuthFormProps) {
       ? (form.elements.namedItem('name') as HTMLInputElement).value
       : null
 
+    // Modo fake: sem credenciais Supabase configuradas, navega diretamente
+    const hasSupabase =
+      process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!hasSupabase) {
+      setTimeout(() => {
+        router.push(mode === 'signup' ? '/onboarding' : '/dashboard')
+      }, 600)
+      return
+    }
+
     const supabase = createClient()
 
     if (mode === 'signup') {
@@ -43,8 +54,8 @@ export function AuthForm({ mode }: AuthFormProps) {
         setLoading(false)
         return
       }
-      // Após signup o Supabase envia e-mail de confirmação; redireciona para login com aviso
-      router.push('/login?confirmed=true')
+      // Após signup redireciona para onboarding (criação de workspace)
+      router.push('/onboarding')
       return
     }
 
