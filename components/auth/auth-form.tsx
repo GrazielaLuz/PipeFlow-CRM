@@ -43,8 +43,8 @@ export function AuthForm({ mode }: AuthFormProps) {
         setLoading(false)
         return
       }
-      // Após signup o Supabase envia e-mail de confirmação; redireciona para login com aviso
-      router.push('/login?confirmed=true')
+      // Após signup redireciona para onboarding (criação de workspace)
+      router.push('/onboarding')
       return
     }
 
