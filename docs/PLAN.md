@@ -10,10 +10,10 @@
 
 | # | Milestone | Branch | Foco |
 |---|---|---|---|
-| M01 | Fundação & Design System | `feat/foundation` | Scaffold, layout, componentes base |
-| M02 | Landing Page | `feat/landing-page` | Página pública de marketing |
-| M03 | Autenticação | `feat/auth` | Login, signup, sessão, middleware |
-| M04 | Onboarding | `feat/onboarding` | Criação de workspace + primeiro lead |
+| ~~M01~~ | ~~Fundação & Design System~~ | ~~`feat/foundation`~~ | ✅ Scaffold, layout, componentes base |
+| ~~M02~~ | ~~Landing Page~~ | ~~`feat/landing-page`~~ | ✅ Página pública de marketing |
+| ~~M03~~ | ~~Autenticação~~ | ~~`feat/auth`~~ | ✅ Login, signup, sessão, middleware |
+| ~~M04~~ | ~~Onboarding~~ | ~~`feat/onboarding`~~ | ✅ Criação de workspace + primeiro lead |
 | M05 | Gestão de Leads | `feat/leads` | CRUD completo de leads |
 | M06 | Pipeline Kanban | `feat/pipeline` | Kanban com drag-and-drop |
 | M07 | Atividades | `feat/activities` | Timeline de atividades por lead |
@@ -122,24 +122,24 @@
 ### Entregas
 
 **Banco de dados**
-- [ ] Migration `0001_workspaces.sql` — tabelas `workspaces` e `workspace_members` com RLS básico
-- [ ] RLS policy: usuário só vê workspaces onde é membro
+- [x] Migration `0001_workspaces.sql` — tabelas `workspaces` e `workspace_members` com RLS básico
+- [x] RLS policy: usuário só vê workspaces onde é membro
 
 **UI do onboarding**
-- [ ] `app/(auth)/onboarding/page.tsx` — wizard de 3 passos
-- [ ] Passo 1 — "Crie seu workspace": campo nome da empresa + slug gerado automaticamente
-- [ ] Passo 2 — "Convide seu time" (opcional, pode pular): campo de e-mail + papel
-- [ ] Passo 3 — "Crie seu primeiro lead": formulário simplificado (nome + e-mail)
-- [ ] `components/onboarding/stepper.tsx` — indicador visual de progresso (Step 1 / 2 / 3)
-- [ ] `components/onboarding/workspace-form.tsx`
-- [ ] `components/onboarding/invite-form.tsx`
+- [x] `app/(auth)/onboarding/page.tsx` — wizard de 3 passos
+- [x] Passo 1 — "Crie seu workspace": campo nome da empresa + slug gerado automaticamente
+- [x] Passo 2 — "Convide seu time" (opcional, pode pular): campo de e-mail + papel
+- [x] Passo 3 — "Crie seu primeiro lead": formulário simplificado (nome + e-mail)
+- [x] `components/onboarding/stepper.tsx` — indicador visual de progresso (Step 1 / 2 / 3)
+- [x] `components/onboarding/workspace-form.tsx`
+- [x] `components/onboarding/invite-form.tsx`
 
 **Lógica**
-- [ ] Server Action para criar workspace + inserir usuário como `admin` em `workspace_members`
-- [ ] Armazenar `workspace_id` ativo em cookie após criação
-- [ ] Middleware lê cookie `workspace_id` e injeta no contexto da sessão
+- [ ] Server Action para criar workspace + inserir usuário como `admin` em `workspace_members` *(pendente — conexão com banco)*
+- [ ] Armazenar `workspace_id` ativo em cookie após criação *(pendente — conexão com banco)*
+- [ ] Middleware lê cookie `workspace_id` e injeta no contexto da sessão *(pendente — conexão com banco)*
 
-**Commit final:** `feat: onboarding — workspace creation wizard, first lead flow`
+**Commit final:** `feat: onboarding — wizard 3 passos, migration workspaces (stub UI, sem banco)` ✅ mergeado em main via PR #4
 
 ---
 
