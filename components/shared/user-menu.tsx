@@ -1,6 +1,7 @@
 'use client'
 
 import { LogOut, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 const mockUser = {
   name: 'Graziela Espíndola',
@@ -19,6 +21,15 @@ const mockUser = {
 }
 
 export function UserMenu() {
+  const router = useRouter()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
+
   const initials = mockUser.name
     .split(' ')
     .slice(0, 2)
@@ -60,7 +71,7 @@ export function UserMenu() {
           Perfil
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" className="gap-2">
+        <DropdownMenuItem variant="destructive" className="gap-2" onClick={handleSignOut}>
           <LogOut className="h-4 w-4" />
           Sair
         </DropdownMenuItem>
