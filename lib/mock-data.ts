@@ -1,4 +1,4 @@
-import { Lead, Activity, ActivityType, LeadStatus } from '@/types'
+import { Lead, Activity, ActivityType, Deal, DealStage } from '@/types'
 
 function daysAgo(days: number) {
   return new Date(Date.now() - days * 86_400_000).toISOString()
@@ -350,6 +350,182 @@ export const MOCK_ACTIVITIES: Record<string, MockActivity[]> = {
       author: { id: 'u1', email: 'voce@empresa.com', full_name: 'Você' },
     },
   ],
+}
+
+function daysFromNow(days: number) {
+  return new Date(Date.now() + days * 86_400_000).toISOString().split('T')[0]
+}
+
+export const MOCK_DEALS: Deal[] = [
+  // Prospecção (2)
+  {
+    id: 'd1',
+    workspace_id: 'ws1',
+    title: 'Licença Enterprise — Acme Corp',
+    value: 48000,
+    stage: 'prospecting',
+    lead_id: '1',
+    assignee_id: undefined,
+    deadline: daysFromNow(30),
+    created_at: daysAgo(3),
+    lead: { id: '1', name: 'Ana Paula Oliveira', company: 'Acme Corp' },
+  },
+  {
+    id: 'd2',
+    workspace_id: 'ws1',
+    title: 'Módulo de Automação — Indústria 3.0',
+    value: 18500,
+    stage: 'prospecting',
+    lead_id: '13',
+    assignee_id: undefined,
+    deadline: daysFromNow(45),
+    created_at: daysAgo(2),
+    lead: { id: '13', name: 'Patrícia Nascimento Silva', company: 'Indústria 3.0' },
+  },
+  // Qualificação (2)
+  {
+    id: 'd3',
+    workspace_id: 'ws1',
+    title: 'Plano Pro Anual — TechCo',
+    value: 22000,
+    stage: 'qualification',
+    lead_id: '2',
+    assignee_id: undefined,
+    deadline: daysFromNow(20),
+    created_at: daysAgo(6),
+    lead: { id: '2', name: 'Bruno Henrique Santos', company: 'TechCo' },
+  },
+  {
+    id: 'd4',
+    workspace_id: 'ws1',
+    title: 'CRM + Integrações — Logística Expressa',
+    value: 35000,
+    stage: 'qualification',
+    lead_id: '10',
+    assignee_id: undefined,
+    deadline: daysFromNow(25),
+    created_at: daysAgo(9),
+    lead: { id: '10', name: 'Leonardo Gomes Araújo', company: 'Logística Expressa' },
+  },
+  // Proposta (2)
+  {
+    id: 'd5',
+    workspace_id: 'ws1',
+    title: 'Pipeline + Dashboard — Distribuidora Max',
+    value: 29800,
+    stage: 'proposal',
+    lead_id: '9',
+    assignee_id: undefined,
+    deadline: daysFromNow(12),
+    created_at: daysAgo(14),
+    lead: { id: '9', name: 'Juliana Barbosa Martins', company: 'Distribuidora Max' },
+  },
+  {
+    id: 'd6',
+    workspace_id: 'ws1',
+    title: 'Consultoria de Implantação — FinTech SA',
+    value: 15000,
+    stage: 'proposal',
+    lead_id: '3',
+    assignee_id: undefined,
+    deadline: daysFromNow(8),
+    created_at: daysAgo(18),
+    lead: { id: '3', name: 'Carla Mendes Ferreira', company: 'FinTech SA' },
+  },
+  // Negociação (2)
+  {
+    id: 'd7',
+    workspace_id: 'ws1',
+    title: 'Contrato Anual Revisado — Imobiliária Prime',
+    value: 42000,
+    stage: 'negotiation',
+    lead_id: '14',
+    assignee_id: undefined,
+    deadline: daysFromNow(5),
+    created_at: daysAgo(22),
+    lead: { id: '14', name: 'Rafael Moura Braga', company: 'Imobiliária Prime' },
+  },
+  {
+    id: 'd8',
+    workspace_id: 'ws1',
+    title: 'Licença + Suporte Premium — Construtora Nova',
+    value: 56000,
+    stage: 'negotiation',
+    lead_id: '6',
+    assignee_id: undefined,
+    deadline: daysFromNow(3),
+    created_at: daysAgo(25),
+    lead: { id: '6', name: 'Gabriel Torres Neto', company: 'Construtora Nova' },
+  },
+  // Fechado Ganho (2)
+  {
+    id: 'd9',
+    workspace_id: 'ws1',
+    title: 'Plano Pro — StartupBR',
+    value: 24000,
+    stage: 'closed_won',
+    lead_id: '4',
+    assignee_id: undefined,
+    deadline: undefined,
+    created_at: daysAgo(35),
+    lead: { id: '4', name: 'Diego Almeida Costa', company: 'StartupBR' },
+  },
+  {
+    id: 'd10',
+    workspace_id: 'ws1',
+    title: 'Licença Educacional — EducaFácil',
+    value: 19200,
+    stage: 'closed_won',
+    lead_id: '11',
+    assignee_id: undefined,
+    deadline: undefined,
+    created_at: daysAgo(65),
+    lead: { id: '11', name: 'Mariana Ramos Pereira', company: 'EducaFácil' },
+  },
+  // Fechado Perdido (2)
+  {
+    id: 'd11',
+    workspace_id: 'ws1',
+    title: 'Proposta Recusada — Grupo Logos',
+    value: 31000,
+    stage: 'closed_lost',
+    lead_id: '5',
+    assignee_id: undefined,
+    deadline: undefined,
+    created_at: daysAgo(50),
+    lead: { id: '5', name: 'Fernanda Lima Rodrigues', company: 'Grupo Logos' },
+  },
+  {
+    id: 'd12',
+    workspace_id: 'ws1',
+    title: 'Sem Budget — Varejo 360',
+    value: 14500,
+    stage: 'closed_lost',
+    lead_id: '12',
+    assignee_id: undefined,
+    deadline: undefined,
+    created_at: daysAgo(40),
+    lead: { id: '12', name: 'Nicolas Farias Cunha', company: 'Varejo 360' },
+  },
+]
+
+export function getMockDeal(id: string): Deal | undefined {
+  return MOCK_DEALS.find((d) => d.id === id)
+}
+
+export function getMockDealsByStage(): Record<DealStage, Deal[]> {
+  const grouped: Record<DealStage, Deal[]> = {
+    prospecting: [],
+    qualification: [],
+    proposal: [],
+    negotiation: [],
+    closed_won: [],
+    closed_lost: [],
+  }
+  for (const deal of MOCK_DEALS) {
+    grouped[deal.stage].push(deal)
+  }
+  return grouped
 }
 
 export function getMockLead(id: string): Lead | undefined {
