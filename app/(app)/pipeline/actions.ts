@@ -137,7 +137,7 @@ export async function updateDeal(
 
 export async function deleteDeal(id: string): Promise<{ error?: string }> {
   if (!isSupabaseConfigured()) {
-    return { error: 'Supabase não configurado.' }
+    return {} // mock mode: aceita sem persistir
   }
 
   const { createClient } = await import('@/lib/supabase/server')
@@ -158,7 +158,7 @@ export async function updateDealStage(
   newStage: DealStage,
 ): Promise<{ error?: string }> {
   if (!isSupabaseConfigured()) {
-    return { error: 'Supabase não configurado.' }
+    return {} // mock mode: aceita sem persistir
   }
 
   const { createClient } = await import('@/lib/supabase/server')
