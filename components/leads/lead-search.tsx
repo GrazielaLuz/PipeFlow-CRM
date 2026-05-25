@@ -38,7 +38,7 @@ export function LeadSearch() {
       <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         className="pl-8"
-        placeholder="Buscar por nome ou e-mail..."
+        placeholder="Buscar por nome, empresa ou e-mail..."
         defaultValue={searchParams.get('q') ?? ''}
         onChange={onInput}
       />

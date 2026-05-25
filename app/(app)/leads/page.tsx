@@ -6,6 +6,7 @@ import { LeadFilters } from '@/components/leads/lead-filters'
 import { LeadSearch } from '@/components/leads/lead-search'
 import { LeadPagination } from '@/components/leads/lead-pagination'
 import { NewLeadDialog } from '@/components/leads/new-lead-dialog'
+import { filterMockLeads } from '@/lib/mock-data'
 import { Lead } from '@/types'
 
 const PAGE_SIZE = 20
@@ -18,7 +19,12 @@ interface SearchParams {
 
 async function fetchLeads(params: SearchParams): Promise<{ leads: Lead[]; total: number }> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    return { leads: MOCK_LEADS, total: MOCK_LEADS.length }
+    return filterMockLeads({
+      q: params.q,
+      status: params.status,
+      page: Number(params.page ?? 1),
+      pageSize: PAGE_SIZE,
+    })
   }
 
   const { createClient } = await import('@/lib/supabase/server')
@@ -49,7 +55,9 @@ async function fetchLeads(params: SearchParams): Promise<{ leads: Lead[]; total:
     .range(from, to)
 
   if (params.q) {
-    query = query.or(`name.ilike.%${params.q}%,email.ilike.%${params.q}%`)
+    query = query.or(
+      `name.ilike.%${params.q}%,email.ilike.%${params.q}%,company.ilike.%${params.q}%`,
+    )
   }
   if (params.status && params.status !== 'all') {
     query = query.eq('status', params.status)
@@ -62,7 +70,7 @@ async function fetchLeads(params: SearchParams): Promise<{ leads: Lead[]; total:
 function LeadsTableSkeleton() {
   return (
     <div className="space-y-2 rounded-lg border p-4">
-      {Array.from({ length: 5 }).map((_, i) => (
+      {Array.from({ length: 8 }).map((_, i) => (
         <Skeleton key={i} className="h-10 w-full" />
       ))}
     </div>
@@ -91,10 +99,7 @@ export default async function LeadsPage({
 
   return (
     <>
-      <TopBar
-        title="Leads"
-        actions={<NewLeadDialog />}
-      />
+      <TopBar title="Leads" actions={<NewLeadDialog />} />
       <div className="flex-1 overflow-auto p-6">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -113,42 +118,3 @@ export default async function LeadsPage({
     </>
   )
 }
-
-// Mock para desenvolvimento sem Supabase
-const MOCK_LEADS: Lead[] = [
-  {
-    id: '1',
-    workspace_id: 'ws1',
-    name: 'Ana Oliveira',
-    email: 'ana@acme.com',
-    company: 'Acme Corp',
-    role: 'Diretora Comercial',
-    phone: '+55 11 91234-5678',
-    status: 'qualified',
-    assignee_id: undefined,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-  {
-    id: '2',
-    workspace_id: 'ws1',
-    name: 'Bruno Santos',
-    email: 'bruno@techco.io',
-    company: 'TechCo',
-    role: 'CEO',
-    phone: '+55 21 99876-5432',
-    status: 'contacted',
-    assignee_id: undefined,
-    created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
-  },
-  {
-    id: '3',
-    workspace_id: 'ws1',
-    name: 'Carla Mendes',
-    email: 'carla@fintech.com.br',
-    company: 'FinTech SA',
-    role: 'CFO',
-    status: 'new',
-    assignee_id: undefined,
-    created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-]

@@ -1,54 +1,18 @@
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { TopBar } from '@/components/shared/top-bar'
 import { LeadProfile } from '@/components/leads/lead-profile'
+import { ActivityTimeline } from '@/components/leads/activity-timeline'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { ArrowLeft, Clock, Kanban } from 'lucide-react'
-import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { Lead } from '@/types'
-
-const MOCK_LEADS: Record<string, Lead> = {
-  '1': {
-    id: '1',
-    workspace_id: 'ws1',
-    name: 'Ana Oliveira',
-    email: 'ana@acme.com',
-    company: 'Acme Corp',
-    role: 'Diretora Comercial',
-    phone: '+55 11 91234-5678',
-    status: 'qualified',
-    assignee_id: undefined,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-  '2': {
-    id: '2',
-    workspace_id: 'ws1',
-    name: 'Bruno Santos',
-    email: 'bruno@techco.io',
-    company: 'TechCo',
-    role: 'CEO',
-    phone: '+55 21 99876-5432',
-    status: 'contacted',
-    assignee_id: undefined,
-    created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
-  },
-  '3': {
-    id: '3',
-    workspace_id: 'ws1',
-    name: 'Carla Mendes',
-    email: 'carla@fintech.com.br',
-    company: 'FinTech SA',
-    role: 'CFO',
-    status: 'new',
-    assignee_id: undefined,
-    created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-}
+import { getMockLead, getMockActivities } from '@/lib/mock-data'
+import { Lead, Activity } from '@/types'
 
 async function fetchLead(id: string): Promise<Lead | null> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    return MOCK_LEADS[id] ?? null
+    return getMockLead(id) ?? null
   }
 
   const { createClient } = await import('@/lib/supabase/server')
@@ -63,13 +27,30 @@ async function fetchLead(id: string): Promise<Lead | null> {
   return (data as Lead) ?? null
 }
 
+async function fetchActivities(leadId: string): Promise<Activity[]> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return getMockActivities(leadId)
+  }
+
+  const { createClient } = await import('@/lib/supabase/server')
+  const supabase = await createClient()
+
+  const { data } = await supabase
+    .from('activities')
+    .select('*, author:author_id(id, email, full_name, avatar_url)')
+    .eq('lead_id', leadId)
+    .order('date', { ascending: false })
+
+  return (data as Activity[]) ?? []
+}
+
 export default async function LeadDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const lead = await fetchLead(id)
+  const [lead, activities] = await Promise.all([fetchLead(id), fetchActivities(id)])
 
   if (!lead) notFound()
 
@@ -93,9 +74,9 @@ export default async function LeadDetailPage({
 
           {/* Negócios vinculados — implementado no M06 */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Kanban className="h-4 w-4" />
+                <Kanban className="h-4 w-4 text-muted-foreground" />
                 Negócios
               </CardTitle>
             </CardHeader>
@@ -106,18 +87,16 @@ export default async function LeadDetailPage({
             </CardContent>
           </Card>
 
-          {/* Timeline de atividades — implementada no M07 */}
+          {/* Timeline de atividades */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Atividades
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                Histórico de Atividades
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                O histórico de atividades deste lead aparecerá aqui após implementar as Atividades (M07).
-              </p>
+            <CardContent className="pt-2">
+              <ActivityTimeline activities={activities} />
             </CardContent>
           </Card>
         </div>
