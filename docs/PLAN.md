@@ -14,7 +14,7 @@
 | ~~M02~~ | ~~Landing Page~~ | ~~`feat/landing-page`~~ | ✅ Página pública de marketing |
 | ~~M03~~ | ~~Autenticação~~ | ~~`feat/auth`~~ | ✅ Login, signup, sessão, middleware |
 | ~~M04~~ | ~~Onboarding~~ | ~~`feat/onboarding`~~ | ✅ Criação de workspace + primeiro lead |
-| M05 | Gestão de Leads | `feat/leads` | CRUD completo de leads |
+| ~~M05~~ | ~~Gestão de Leads~~ | ~~`feat/leads`~~ | ✅ CRUD completo de leads |
 | M06 | Pipeline Kanban | `feat/pipeline` | Kanban com drag-and-drop |
 | M07 | Atividades | `feat/activities` | Timeline de atividades por lead |
 | M08 | Dashboard | `feat/dashboard` | Métricas, gráfico de funil |
