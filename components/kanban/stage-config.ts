@@ -10,14 +10,14 @@ export type StageConfig = {
 
 export const STAGE_CONFIG: Record<DealStage, StageConfig> = {
   prospecting: {
-    label: 'Prospecção',
+    label: 'Novo Lead',
     color: '#3B82F6',
     bg: 'rgba(59,130,246,0.08)',
     border: 'rgba(59,130,246,0.3)',
     textColor: '#3B82F6',
   },
   qualification: {
-    label: 'Qualificação',
+    label: 'Contato',
     color: '#06B6D4',
     bg: 'rgba(6,182,212,0.08)',
     border: 'rgba(6,182,212,0.3)',
@@ -38,14 +38,14 @@ export const STAGE_CONFIG: Record<DealStage, StageConfig> = {
     textColor: '#F97316',
   },
   closed_won: {
-    label: 'Fechado (Ganho)',
+    label: 'Fechado Ganho',
     color: '#22C55E',
     bg: 'rgba(34,197,94,0.08)',
     border: 'rgba(34,197,94,0.3)',
     textColor: '#22C55E',
   },
   closed_lost: {
-    label: 'Fechado (Perdido)',
+    label: 'Fechado Perdido',
     color: '#EF4444',
     bg: 'rgba(239,68,68,0.08)',
     border: 'rgba(239,68,68,0.3)',
