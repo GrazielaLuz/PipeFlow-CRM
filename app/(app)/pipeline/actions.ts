@@ -72,7 +72,7 @@ export async function createDeal(
   }
 
   if (!isSupabaseConfigured()) {
-    return { error: 'Supabase não configurado. Configure as variáveis de ambiente.' }
+    return { success: true } // mock mode: aceita sem persistir
   }
 
   const workspaceId = await getWorkspaceId()
@@ -116,7 +116,7 @@ export async function updateDeal(
   }
 
   if (!isSupabaseConfigured()) {
-    return { error: 'Supabase não configurado.' }
+    return { success: true } // mock mode: aceita sem persistir
   }
 
   const { createClient } = await import('@/lib/supabase/server')
