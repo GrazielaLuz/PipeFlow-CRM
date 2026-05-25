@@ -12,10 +12,11 @@ type Props = {
   deal: Deal
   leads?: Pick<Lead, 'id' | 'name' | 'company'>[]
   onDelete?: (dealId: string) => void
+  onDealUpdated?: (deal: Deal) => void
   overlay?: boolean
 }
 
-export function DealCard({ deal, leads = [], onDelete, overlay = false }: Props) {
+export function DealCard({ deal, leads = [], onDelete, onDealUpdated, overlay = false }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const {
@@ -120,6 +121,7 @@ export function DealCard({ deal, leads = [], onDelete, overlay = false }: Props)
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         onDelete={onDelete}
+        onDealUpdated={onDealUpdated}
       />
     </>
   )

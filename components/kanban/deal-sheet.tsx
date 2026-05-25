@@ -28,9 +28,10 @@ type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onDelete?: (dealId: string) => void
+  onDealUpdated?: (deal: Deal) => void
 }
 
-export function DealSheet({ deal, leads = [], open, onOpenChange, onDelete }: Props) {
+export function DealSheet({ deal, leads = [], open, onOpenChange, onDelete, onDealUpdated }: Props) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -113,7 +114,10 @@ export function DealSheet({ deal, leads = [], open, onOpenChange, onDelete }: Pr
             <DealForm
               deal={deal}
               leads={leads}
-              onSuccess={() => onOpenChange(false)}
+              onSuccess={(updatedDeal) => {
+                onOpenChange(false)
+                onDealUpdated?.(updatedDeal)
+              }}
             />
           </div>
 

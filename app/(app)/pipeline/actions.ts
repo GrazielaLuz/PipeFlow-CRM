@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import { DealStage } from '@/types'
+import { Deal, DealStage } from '@/types'
 
 const DEAL_STAGES: [DealStage, ...DealStage[]] = [
   'prospecting',
@@ -26,6 +26,7 @@ export type DealFormState = {
   error?: string
   fieldErrors?: Record<string, string[]>
   success?: boolean
+  deal?: Deal
 }
 
 function isSupabaseConfigured() {
@@ -72,7 +73,18 @@ export async function createDeal(
   }
 
   if (!isSupabaseConfigured()) {
-    return { success: true } // mock mode: aceita sem persistir
+    const deal: Deal = {
+      id: `mock-${Date.now()}`,
+      workspace_id: 'ws1',
+      title: parsed.data.title,
+      value: parsed.data.value,
+      stage: parsed.data.stage,
+      lead_id: parsed.data.lead_id ?? undefined,
+      assignee_id: parsed.data.assignee_id ?? undefined,
+      deadline: parsed.data.deadline ?? undefined,
+      created_at: new Date().toISOString(),
+    }
+    return { success: true, deal }
   }
 
   const workspaceId = await getWorkspaceId()
@@ -83,17 +95,16 @@ export async function createDeal(
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
-  const { error } = await supabase.from('deals').insert({
-    ...parsed.data,
-    workspace_id: workspaceId,
-  })
+  const { data, error } = await supabase
+    .from('deals')
+    .insert({ ...parsed.data, workspace_id: workspaceId })
+    .select()
+    .single()
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return { error: error.message }
 
   revalidatePath('/pipeline')
-  return { success: true }
+  return { success: true, deal: data as Deal }
 }
 
 export async function updateDeal(
@@ -116,38 +127,45 @@ export async function updateDeal(
   }
 
   if (!isSupabaseConfigured()) {
-    return { success: true } // mock mode: aceita sem persistir
+    const deal: Deal = {
+      id,
+      workspace_id: 'ws1',
+      title: parsed.data.title,
+      value: parsed.data.value,
+      stage: parsed.data.stage,
+      lead_id: parsed.data.lead_id ?? undefined,
+      assignee_id: parsed.data.assignee_id ?? undefined,
+      deadline: parsed.data.deadline ?? undefined,
+      created_at: new Date().toISOString(),
+    }
+    return { success: true, deal }
   }
 
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('deals')
     .update(parsed.data)
     .eq('id', id)
+    .select()
+    .single()
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return { error: error.message }
 
   revalidatePath('/pipeline')
-  return { success: true }
+  return { success: true, deal: data as Deal }
 }
 
 export async function deleteDeal(id: string): Promise<{ error?: string }> {
-  if (!isSupabaseConfigured()) {
-    return {} // mock mode: aceita sem persistir
-  }
+  if (!isSupabaseConfigured()) return {}
 
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
   const { error } = await supabase.from('deals').delete().eq('id', id)
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return { error: error.message }
 
   revalidatePath('/pipeline')
   return {}
@@ -157,9 +175,7 @@ export async function updateDealStage(
   dealId: string,
   newStage: DealStage,
 ): Promise<{ error?: string }> {
-  if (!isSupabaseConfigured()) {
-    return {} // mock mode: aceita sem persistir
-  }
+  if (!isSupabaseConfigured()) return {}
 
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
@@ -169,9 +185,7 @@ export async function updateDealStage(
     .update({ stage: newStage })
     .eq('id', dealId)
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return { error: error.message }
 
   revalidatePath('/pipeline')
   return {}

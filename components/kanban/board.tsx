@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -18,31 +18,32 @@ import { updateDealStage } from '@/app/(app)/pipeline/actions'
 import { KanbanColumn } from './column'
 import { DealCard } from './deal-card'
 import { STAGE_ORDER } from './stage-config'
+import { useState } from 'react'
 
 type DealsByStage = Record<DealStage, Deal[]>
 
 type Props = {
   initialDeals: DealsByStage
   leads?: Pick<Lead, 'id' | 'name' | 'company'>[]
+  onDealCreated?: (deal: Deal) => void
+  onDealUpdated?: (deal: Deal) => void
+  onDealDeleted?: (dealId: string) => void
 }
 
 function findStageOf(dealId: string, state: DealsByStage): DealStage | undefined {
   return STAGE_ORDER.find((s) => state[s].some((d) => d.id === dealId))
 }
 
-export function KanbanBoard({ initialDeals, leads = [] }: Props) {
+export function KanbanBoard({ initialDeals, leads = [], onDealCreated, onDealUpdated, onDealDeleted }: Props) {
   const [dealsByStage, setDealsByStage] = useState<DealsByStage>(initialDeals)
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null)
 
-  // Refs for rollback and server-sync — avoids stale closure issues
   const snapshotRef = useRef<DealsByStage | null>(null)
   const originalStageRef = useRef<DealStage | null>(null)
   const finalStageRef = useRef<DealStage | null>(null)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   )
 
   // ── drag start ──────────────────────────────────────────────────────────
@@ -61,7 +62,6 @@ export function KanbanBoard({ initialDeals, leads = [] }: Props) {
   // ── drag over — moves card between columns during drag ──────────────────
   function handleDragOver({ active, over }: DragOverEvent) {
     if (!over) return
-
     const activeId = String(active.id)
     const overId = String(over.id)
 
@@ -108,24 +108,20 @@ export function KanbanBoard({ initialDeals, leads = [] }: Props) {
     const activeId = String(active.id)
     const overId = String(over.id)
 
-    // Reorder within same column when dropped on a sibling card
     const isOverCard = !STAGE_ORDER.includes(overId as DealStage)
     if (isOverCard) {
       setDealsByStage((prev) => {
         const stage = findStageOf(activeId, prev)
         const overStage = findStageOf(overId, prev)
         if (!stage || stage !== overStage) return prev
-
         const items = prev[stage]
         const oldIdx = items.findIndex((d) => d.id === activeId)
         const newIdx = items.findIndex((d) => d.id === overId)
         if (oldIdx === -1 || newIdx === -1 || oldIdx === newIdx) return prev
-
         return { ...prev, [stage]: arrayMove(items, oldIdx, newIdx) }
       })
     }
 
-    // Persist to server if card moved to a different column
     if (originalStage && movedToStage && originalStage !== movedToStage) {
       const result = await updateDealStage(activeId, movedToStage)
       if (result.error && snapshot) {
@@ -141,6 +137,37 @@ export function KanbanBoard({ initialDeals, leads = [] }: Props) {
       if (!stage) return prev
       return { ...prev, [stage]: prev[stage].filter((d) => d.id !== dealId) }
     })
+    onDealDeleted?.(dealId)
+  }
+
+  // ── create / update — delegated to parent via callbacks ─────────────────
+  function handleDealCreated(deal: Deal) {
+    setDealsByStage((prev) => ({
+      ...prev,
+      [deal.stage]: [...prev[deal.stage], deal],
+    }))
+    onDealCreated?.(deal)
+  }
+
+  function handleDealUpdated(updated: Deal) {
+    setDealsByStage((prev) => {
+      const oldStage = findStageOf(updated.id, prev)
+      if (!oldStage) return prev
+
+      if (oldStage === updated.stage) {
+        return {
+          ...prev,
+          [oldStage]: prev[oldStage].map((d) => (d.id === updated.id ? updated : d)),
+        }
+      }
+
+      return {
+        ...prev,
+        [oldStage]: prev[oldStage].filter((d) => d.id !== updated.id),
+        [updated.stage]: [...prev[updated.stage], updated],
+      }
+    })
+    onDealUpdated?.(updated)
   }
 
   return (
@@ -160,6 +187,8 @@ export function KanbanBoard({ initialDeals, leads = [] }: Props) {
             colIndex={index}
             leads={leads}
             onDeleteDeal={handleDeleteDeal}
+            onDealCreated={handleDealCreated}
+            onDealUpdated={handleDealUpdated}
           />
         ))}
       </div>

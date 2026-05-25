@@ -19,7 +19,7 @@ type Props = {
   deal?: Deal
   leads?: Pick<Lead, 'id' | 'name' | 'company'>[]
   defaultStage?: DealStage
-  onSuccess?: () => void
+  onSuccess?: (deal: Deal) => void
 }
 
 const initialState: DealFormState = {}
@@ -32,8 +32,8 @@ export function DealForm({ deal, leads = [], defaultStage = 'prospecting', onSuc
   const [state, formAction, isPending] = useActionState(action, initialState)
 
   useEffect(() => {
-    if (state.success) onSuccess?.()
-  }, [state.success, onSuccess])
+    if (state.success && state.deal) onSuccess?.(state.deal)
+  }, [state.success, state.deal, onSuccess])
 
   return (
     <form action={formAction} className="space-y-4">

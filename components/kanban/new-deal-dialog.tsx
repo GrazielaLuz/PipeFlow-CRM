@@ -10,16 +10,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { DealStage, Lead } from '@/types'
+import { Deal, DealStage, Lead } from '@/types'
 import { DealForm } from './deal-form'
 
 type Props = {
   defaultStage?: DealStage
   leads?: Pick<Lead, 'id' | 'name' | 'company'>[]
   variant?: 'default' | 'ghost-sm'
+  onDealCreated?: (deal: Deal) => void
 }
 
-export function NewDealDialog({ defaultStage = 'prospecting', leads = [], variant = 'default' }: Props) {
+export function NewDealDialog({ defaultStage = 'prospecting', leads = [], variant = 'default', onDealCreated }: Props) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -50,7 +51,10 @@ export function NewDealDialog({ defaultStage = 'prospecting', leads = [], varian
         <DealForm
           defaultStage={defaultStage}
           leads={leads}
-          onSuccess={() => setOpen(false)}
+          onSuccess={(deal) => {
+            setOpen(false)
+            onDealCreated?.(deal)
+          }}
         />
       </DialogContent>
     </Dialog>

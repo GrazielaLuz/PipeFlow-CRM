@@ -13,9 +13,11 @@ type Props = {
   colIndex: number
   leads?: Pick<Lead, 'id' | 'name' | 'company'>[]
   onDeleteDeal?: (dealId: string) => void
+  onDealCreated?: (deal: Deal) => void
+  onDealUpdated?: (deal: Deal) => void
 }
 
-export function KanbanColumn({ stage, deals, colIndex, leads = [], onDeleteDeal }: Props) {
+export function KanbanColumn({ stage, deals, colIndex, leads = [], onDeleteDeal, onDealCreated, onDealUpdated }: Props) {
   const config = STAGE_CONFIG[stage]
   const totalValue = deals.reduce((sum, d) => sum + d.value, 0)
   const dealIds = deals.map((d) => d.id)
@@ -84,6 +86,7 @@ export function KanbanColumn({ stage, deals, colIndex, leads = [], onDeleteDeal 
               deal={deal}
               leads={leads}
               onDelete={onDeleteDeal}
+              onDealUpdated={onDealUpdated}
             />
           ))}
 
@@ -111,6 +114,7 @@ export function KanbanColumn({ stage, deals, colIndex, leads = [], onDeleteDeal 
           defaultStage={stage}
           leads={leads}
           variant="ghost-sm"
+          onDealCreated={onDealCreated}
         />
       </div>
     </div>
