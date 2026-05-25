@@ -177,8 +177,6 @@ export const MOCK_LEADS: Lead[] = [
 
 type MockActivity = Activity & { lead_name?: string }
 
-const activityTypes: ActivityType[] = ['call', 'email', 'meeting', 'note']
-
 export const MOCK_ACTIVITIES: Record<string, MockActivity[]> = {
   '1': [
     {

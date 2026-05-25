@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useCallback, useTransition } from 'react'
+import { useCallback, useRef, useTransition } from 'react'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 
@@ -10,6 +10,7 @@ export function LeadSearch() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const handleSearch = useCallback(
     (term: string) => {
@@ -27,10 +28,9 @@ export function LeadSearch() {
     [router, pathname, searchParams],
   )
 
-  let debounceTimer: ReturnType<typeof setTimeout>
   function onInput(e: React.ChangeEvent<HTMLInputElement>) {
-    clearTimeout(debounceTimer)
-    debounceTimer = setTimeout(() => handleSearch(e.target.value), 300)
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => handleSearch(e.target.value), 300)
   }
 
   return (
