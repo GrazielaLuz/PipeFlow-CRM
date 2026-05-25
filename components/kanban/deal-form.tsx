@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -31,9 +31,12 @@ export function DealForm({ deal, leads = [], defaultStage = 'prospecting', onSuc
 
   const [state, formAction, isPending] = useActionState(action, initialState)
 
+  const onSuccessRef = useRef(onSuccess)
+  useEffect(() => { onSuccessRef.current = onSuccess })
+
   useEffect(() => {
-    if (state.success && state.deal) onSuccess?.(state.deal)
-  }, [state.success, state.deal, onSuccess])
+    if (state.success && state.deal) onSuccessRef.current?.(state.deal)
+  }, [state.success, state.deal])
 
   return (
     <form action={formAction} className="space-y-4">
