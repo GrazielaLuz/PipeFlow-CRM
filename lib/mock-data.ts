@@ -357,6 +357,68 @@ function daysFromNow(days: number) {
 }
 
 export const MOCK_DEALS: Deal[] = [
+  // Prospecção (5)
+  {
+    id: 'd13',
+    workspace_id: 'ws1',
+    title: 'Plano Starter — Agência Pulse',
+    value: 9800,
+    stage: 'prospecting',
+    lead_id: '8',
+    assignee_id: undefined,
+    deadline: daysFromNow(60),
+    created_at: daysAgo(1),
+    lead: { id: '8', name: 'Igor Cardoso Pinto', company: 'Agência Pulse' },
+  },
+  {
+    id: 'd14',
+    workspace_id: 'ws1',
+    title: 'CRM Básico — Medicare Saúde',
+    value: 14400,
+    stage: 'prospecting',
+    lead_id: '7',
+    assignee_id: undefined,
+    deadline: daysFromNow(50),
+    created_at: daysAgo(4),
+    lead: { id: '7', name: 'Helena Vieira Souza', company: 'Medicare Saúde' },
+  },
+  {
+    id: 'd15',
+    workspace_id: 'ws1',
+    title: 'Módulo Relatórios — EducaFácil',
+    value: 7200,
+    stage: 'prospecting',
+    lead_id: '11',
+    assignee_id: undefined,
+    deadline: daysFromNow(40),
+    created_at: daysAgo(6),
+    lead: { id: '11', name: 'Mariana Ramos Pereira', company: 'EducaFácil' },
+  },
+  // Qualificação (4)
+  {
+    id: 'd16',
+    workspace_id: 'ws1',
+    title: 'Expansão de Licenças — Distribuidora Max',
+    value: 19000,
+    stage: 'qualification',
+    lead_id: '9',
+    assignee_id: undefined,
+    deadline: daysFromNow(35),
+    created_at: daysAgo(7),
+    lead: { id: '9', name: 'Juliana Barbosa Martins', company: 'Distribuidora Max' },
+  },
+  {
+    id: 'd17',
+    workspace_id: 'ws1',
+    title: 'Suporte Premium — Varejo 360',
+    value: 11500,
+    stage: 'qualification',
+    lead_id: '12',
+    assignee_id: undefined,
+    deadline: daysFromNow(28),
+    created_at: daysAgo(10),
+    lead: { id: '12', name: 'Nicolas Farias Cunha', company: 'Varejo 360' },
+  },
   // Prospecção (2)
   {
     id: 'd1',
@@ -509,8 +571,28 @@ export const MOCK_DEALS: Deal[] = [
   },
 ]
 
+// Mutable store — persists in-memory within the dev server process so that
+// server actions (drag-and-drop, CRUD) survive navigation without Supabase.
+let _deals: Deal[] = [...MOCK_DEALS]
+
+export function updateMockDealStage(dealId: string, newStage: DealStage): void {
+  _deals = _deals.map((d) => (d.id === dealId ? { ...d, stage: newStage } : d))
+}
+
+export function addMockDeal(deal: Deal): void {
+  _deals = [deal, ..._deals]
+}
+
+export function updateMockDeal(updated: Deal): void {
+  _deals = _deals.map((d) => (d.id === updated.id ? updated : d))
+}
+
+export function removeMockDeal(dealId: string): void {
+  _deals = _deals.filter((d) => d.id !== dealId)
+}
+
 export function getMockDeal(id: string): Deal | undefined {
-  return MOCK_DEALS.find((d) => d.id === id)
+  return _deals.find((d) => d.id === id)
 }
 
 export function getMockDealsByStage(): Record<DealStage, Deal[]> {
@@ -522,7 +604,7 @@ export function getMockDealsByStage(): Record<DealStage, Deal[]> {
     closed_won: [],
     closed_lost: [],
   }
-  for (const deal of MOCK_DEALS) {
+  for (const deal of _deals) {
     grouped[deal.stage].push(deal)
   }
   return grouped
@@ -573,4 +655,57 @@ export function filterMockLeads(params: {
   const total = results.length
   const from = (page - 1) * pageSize
   return { leads: results.slice(from, from + pageSize), total }
+}
+
+// ─── Dashboard ────────────────────────────────────────────────────────────────
+
+const STAGE_LABELS: Record<DealStage, string> = {
+  prospecting: 'Novo Lead',
+  qualification: 'Contato',
+  proposal: 'Proposta',
+  negotiation: 'Negociação',
+  closed_won: 'Fechado Ganho',
+  closed_lost: 'Fechado Perdido',
+}
+
+export function getMockDashboardMetrics() {
+  const openDeals = _deals.filter(
+    (d) => d.stage !== 'closed_won' && d.stage !== 'closed_lost',
+  )
+  const closedWon = _deals.filter((d) => d.stage === 'closed_won').length
+  const closedLost = _deals.filter((d) => d.stage === 'closed_lost').length
+  const total = closedWon + closedLost
+  return {
+    totalLeads: MOCK_LEADS.length,
+    openDeals: openDeals.length,
+    pipelineValue: openDeals.reduce((sum, d) => sum + d.value, 0),
+    conversionRate: total > 0 ? (closedWon / total) * 100 : 0,
+  }
+}
+
+export function getMockFunnelData() {
+  const stageOrder: DealStage[] = [
+    'prospecting',
+    'qualification',
+    'proposal',
+    'negotiation',
+    'closed_won',
+    'closed_lost',
+  ]
+  return stageOrder.map((stage) => {
+    const deals = _deals.filter((d) => d.stage === stage)
+    return {
+      stage,
+      label: STAGE_LABELS[stage],
+      count: deals.length,
+      value: deals.reduce((sum, d) => sum + d.value, 0),
+    }
+  })
+}
+
+export function getMockDeadlines(): Deal[] {
+  return _deals
+    .filter((d) => d.deadline != null)
+    .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())
+    .slice(0, 8)
 }
