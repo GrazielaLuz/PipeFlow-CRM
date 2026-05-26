@@ -536,6 +536,17 @@ export function getMockActivities(leadId: string): MockActivity[] {
   return MOCK_ACTIVITIES[leadId] ?? []
 }
 
+export function getAllMockActivities(params?: {
+  type?: string
+  leadId?: string
+}): MockActivity[] {
+  const all = Object.values(MOCK_ACTIVITIES).flat()
+  return all
+    .filter((a) => (!params?.type || a.type === params.type))
+    .filter((a) => (!params?.leadId || a.lead_id === params.leadId))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+}
+
 export function filterMockLeads(params: {
   q?: string
   status?: string

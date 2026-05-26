@@ -3,8 +3,10 @@ import Link from 'next/link'
 import { TopBar } from '@/components/shared/top-bar'
 import { LeadProfile } from '@/components/leads/lead-profile'
 import { ActivityTimeline } from '@/components/leads/activity-timeline'
+import { ActivityForm } from '@/components/leads/activity-form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, Clock, Kanban } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getMockLead, getMockActivities } from '@/lib/mock-data'
@@ -95,7 +97,9 @@ export default async function LeadDetailPage({
                 Histórico de Atividades
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-2">
+            <CardContent className="space-y-6 pt-2">
+              <ActivityForm leadId={lead.id} />
+              {activities.length > 0 && <Separator />}
               <ActivityTimeline activities={activities} />
             </CardContent>
           </Card>
