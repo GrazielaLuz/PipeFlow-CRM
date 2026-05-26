@@ -15,8 +15,8 @@
 | ~~M03~~ | ~~Autenticação~~ | ~~`feat/auth`~~ | ✅ Login, signup, sessão, middleware |
 | ~~M04~~ | ~~Onboarding~~ | ~~`feat/onboarding`~~ | ✅ Criação de workspace + primeiro lead |
 | ~~M05~~ | ~~Gestão de Leads~~ | ~~`feat/leads`~~ | ✅ CRUD completo de leads |
-| M06 | Pipeline Kanban | `feat/pipeline` | Kanban com drag-and-drop |
-| M07 | Atividades | `feat/activities` | Timeline de atividades por lead |
+| ~~M06~~ | ~~Pipeline Kanban~~ | ~~`feat/pipeline`~~ | ✅ Kanban com drag-and-drop |
+| ~~M07~~ | ~~Atividades~~ | ~~`feat/activities`~~ | ✅ Timeline de atividades por lead |
 | M08 | Dashboard | `feat/dashboard` | Métricas, gráfico de funil |
 | M09 | Multi-empresa | `feat/multi-workspace` | Workspaces, convites, permissões |
 | M10 | Monetização | `feat/billing` | Stripe, planos, upgrade/downgrade |
@@ -186,28 +186,27 @@
 ### Entregas
 
 **Banco de dados**
-- [ ] Migration `0003_deals.sql` — tabela `deals` com RLS
-- [ ] Índices em `workspace_id`, `stage`, `assignee_id`
+- [x] Migration `0003_deals.sql` — tabela `deals` com RLS
+- [x] Índices em `workspace_id`, `stage`, `assignee_id`
 
 **Board Kanban**
-- [ ] `app/(app)/pipeline/page.tsx` — Server Component que carrega deals agrupados por stage
-- [ ] `components/kanban/board.tsx` — DndContext + SortableContext do @dnd-kit (Client Component)
-- [ ] `components/kanban/column.tsx` — coluna por etapa com header (nome + total de valor) + lista de cards
-- [ ] `components/kanban/deal-card.tsx` — card com: título, valor (R$), nome do lead, avatar do responsável, badge de prazo
-- [ ] `components/kanban/drag-overlay.tsx` — preview do card durante o arraste
+- [x] `app/(app)/pipeline/page.tsx` — Server Component que carrega deals agrupados por stage
+- [x] `components/kanban/board.tsx` — DndContext + SortableContext do @dnd-kit (Client Component)
+- [x] `components/kanban/column.tsx` — coluna por etapa com header (nome + total de valor) + lista de cards
+- [x] `components/kanban/deal-card.tsx` — card com: título, valor (R$), nome do lead, avatar do responsável, badge de prazo
 
 **Lógica de drag-and-drop**
-- [ ] `onDragEnd` aplica update otimista imediato na UI
-- [ ] Server Action `updateDealStage(dealId, newStage)` persiste no banco
-- [ ] Rollback do estado local em caso de erro do servidor
+- [x] `onDragEnd` aplica update otimista imediato na UI
+- [x] Server Action `updateDealStage(dealId, newStage)` persiste no banco
+- [x] Rollback do estado local em caso de erro do servidor
 
 **CRUD de negócios**
-- [ ] `components/kanban/deal-form.tsx` — formulário: título, valor, lead vinculado, responsável, prazo
-- [ ] Botão "+ Negócio" em cada coluna abre Dialog de criação
-- [ ] Click no card abre Sheet com detalhe + edição
-- [ ] Server Actions: `createDeal`, `updateDeal`, `deleteDeal`
+- [x] `components/kanban/deal-form.tsx` — formulário: título, valor, lead vinculado, responsável, prazo
+- [x] Botão "+ Negócio" em cada coluna abre Dialog de criação
+- [x] Click no card abre Sheet com detalhe + edição
+- [x] Server Actions: `createDeal`, `updateDeal`, `deleteDeal`
 
-**Commit final:** `feat: pipeline — Kanban board, drag-and-drop, deal CRUD`
+**Commit final:** `feat: pipeline — Kanban board, drag-and-drop, deal CRUD` ✅ mergeado em main via PR #6
 
 ---
 
@@ -219,25 +218,24 @@
 ### Entregas
 
 **Banco de dados**
-- [ ] Migration `0004_activities.sql` — tabela `activities` com RLS
+- [x] Migration `0004_activities.sql` — tabela `activities` com RLS
 
 **Timeline na página do lead**
-- [ ] `components/leads/activity-timeline.tsx` — lista cronológica de atividades com ícone por tipo
-- [ ] `components/leads/activity-item.tsx` — card de atividade: ícone, tipo, autor, data, descrição
-- [ ] Integrar timeline em `app/(app)/leads/[id]/page.tsx`
+- [x] `components/leads/activity-timeline.tsx` — lista cronológica de atividades com ícone por tipo
+- [x] Integrar timeline em `app/(app)/leads/[id]/page.tsx`
 
 **Registro de atividade**
-- [ ] `components/leads/activity-form.tsx` — formulário com: tipo (select), descrição (textarea), data
-- [ ] Botão "+ Registrar Atividade" na página de detalhe do lead
-- [ ] Server Action `createActivity` com validação zod
-- [ ] Revalidação da página após criação (`revalidatePath`)
+- [x] `components/leads/activity-form.tsx` — formulário com: tipo (select), descrição (textarea), data
+- [x] Botão "+ Registrar Atividade" na página de detalhe do lead
+- [x] Server Action `createActivity` com validação zod
+- [x] Revalidação da página após criação (`revalidatePath`)
 
 **Página global de atividades**
-- [ ] `app/(app)/activities/page.tsx` — feed de todas as atividades do workspace (ordenadas por data)
-- [ ] Filtro por tipo e por lead
-- [ ] `components/activities/activity-feed.tsx`
+- [x] `app/(app)/activities/page.tsx` — feed de todas as atividades do workspace (ordenadas por data)
+- [x] Filtro por tipo e por lead
+- [x] `components/activities/activity-feed.tsx`
 
-**Commit final:** `feat: activities — activity timeline, registration form, global feed`
+**Commit final:** `feat: activities — activity timeline, registration form, global feed` ✅ mergeado em main via PR #7
 
 ---
 
