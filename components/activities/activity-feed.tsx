@@ -52,8 +52,10 @@ export function ActivityFeed({ activities, leads }: ActivityFeedProps) {
       {/* Filtros */}
       <div className="flex flex-wrap gap-3">
         <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v ?? 'all')}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Tipo" />
+          <SelectTrigger className="w-44">
+            <SelectValue>
+              {typeFilter === 'all' ? 'Todos os tipos' : typeConfig[typeFilter as ActivityType]?.label}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os tipos</SelectItem>
@@ -65,7 +67,11 @@ export function ActivityFeed({ activities, leads }: ActivityFeedProps) {
 
         <Select value={leadFilter} onValueChange={(v) => setLeadFilter(v ?? 'all')}>
           <SelectTrigger className="w-52">
-            <SelectValue placeholder="Lead" />
+            <SelectValue>
+              {leadFilter === 'all'
+                ? 'Todos os leads'
+                : leads.find((l) => l.id === leadFilter)?.name ?? leadFilter}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os leads</SelectItem>

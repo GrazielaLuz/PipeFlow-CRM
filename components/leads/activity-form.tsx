@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import { Phone, Mail, Users, FileText, Plus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -14,18 +14,21 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createActivity, ActivityFormState } from '@/app/(app)/activities/actions'
+import { ActivityType } from '@/types'
 
 const TYPES = [
-  { value: 'call',    label: 'Ligação',  icon: Phone },
-  { value: 'email',   label: 'E-mail',   icon: Mail },
-  { value: 'meeting', label: 'Reunião',  icon: Users },
-  { value: 'note',    label: 'Nota',     icon: FileText },
-] as const
+  { value: 'call'    as ActivityType, label: 'Ligação',  icon: Phone },
+  { value: 'email'   as ActivityType, label: 'E-mail',   icon: Mail },
+  { value: 'meeting' as ActivityType, label: 'Reunião',  icon: Users },
+  { value: 'note'    as ActivityType, label: 'Nota',     icon: FileText },
+]
+
+const DEFAULT_TYPE: ActivityType = 'note'
 
 const initialState: ActivityFormState = {}
 
 function todayLocal() {
-  return new Date().toISOString().slice(0, 16) // "YYYY-MM-DDTHH:mm"
+  return new Date().toISOString().slice(0, 16)
 }
 
 interface ActivityFormProps {
@@ -35,6 +38,7 @@ interface ActivityFormProps {
 
 export function ActivityForm({ leadId, onSuccess }: ActivityFormProps) {
   const [state, formAction, pending] = useActionState(createActivity, initialState)
+  const [selectedType, setSelectedType] = useState<ActivityType>(DEFAULT_TYPE)
   const formRef = useRef<HTMLFormElement>(null)
   const onSuccessRef = useRef(onSuccess)
   onSuccessRef.current = onSuccess
@@ -42,21 +46,25 @@ export function ActivityForm({ leadId, onSuccess }: ActivityFormProps) {
   useEffect(() => {
     if (state.success) {
       formRef.current?.reset()
+      setSelectedType(DEFAULT_TYPE)
       onSuccessRef.current?.()
     }
   }, [state.success])
 
+  const typeLabel = TYPES.find((t) => t.value === selectedType)?.label ?? selectedType
+
   return (
     <form ref={formRef} action={formAction} className="space-y-4">
       <input type="hidden" name="lead_id" value={leadId} />
+      <input type="hidden" name="type" value={selectedType} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Tipo */}
         <div className="space-y-1.5">
-          <Label htmlFor="type">Tipo</Label>
-          <Select name="type" defaultValue="note" required>
-            <SelectTrigger id="type">
-              <SelectValue placeholder="Selecionar tipo" />
+          <Label>Tipo</Label>
+          <Select value={selectedType} onValueChange={(v) => setSelectedType(v as ActivityType)}>
+            <SelectTrigger>
+              <SelectValue>{typeLabel}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {TYPES.map(({ value, label, icon: Icon }) => (
