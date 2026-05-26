@@ -84,6 +84,10 @@ export async function createDeal(
       deadline: parsed.data.deadline ?? undefined,
       created_at: new Date().toISOString(),
     }
+    const { addMockDeal } = await import('@/lib/mock-data')
+    addMockDeal(deal)
+    revalidatePath('/pipeline')
+    revalidatePath('/dashboard')
     return { success: true, deal }
   }
 
@@ -138,6 +142,10 @@ export async function updateDeal(
       deadline: parsed.data.deadline ?? undefined,
       created_at: new Date().toISOString(),
     }
+    const { updateMockDeal } = await import('@/lib/mock-data')
+    updateMockDeal(deal)
+    revalidatePath('/pipeline')
+    revalidatePath('/dashboard')
     return { success: true, deal }
   }
 
@@ -158,7 +166,13 @@ export async function updateDeal(
 }
 
 export async function deleteDeal(id: string): Promise<{ error?: string }> {
-  if (!isSupabaseConfigured()) return {}
+  if (!isSupabaseConfigured()) {
+    const { removeMockDeal } = await import('@/lib/mock-data')
+    removeMockDeal(id)
+    revalidatePath('/pipeline')
+    revalidatePath('/dashboard')
+    return {}
+  }
 
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
@@ -175,7 +189,13 @@ export async function updateDealStage(
   dealId: string,
   newStage: DealStage,
 ): Promise<{ error?: string }> {
-  if (!isSupabaseConfigured()) return {}
+  if (!isSupabaseConfigured()) {
+    const { updateMockDealStage } = await import('@/lib/mock-data')
+    updateMockDealStage(dealId, newStage)
+    revalidatePath('/pipeline')
+    revalidatePath('/dashboard')
+    return {}
+  }
 
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
