@@ -17,7 +17,7 @@
 | ~~M05~~ | ~~Gestão de Leads~~ | ~~`feat/leads`~~ | ✅ CRUD completo de leads |
 | ~~M06~~ | ~~Pipeline Kanban~~ | ~~`feat/pipeline`~~ | ✅ Kanban com drag-and-drop |
 | ~~M07~~ | ~~Atividades~~ | ~~`feat/activities`~~ | ✅ Timeline de atividades por lead |
-| M08 | Dashboard | `feat/dashboard` | Métricas, gráfico de funil |
+| ~~M08~~ | ~~Dashboard~~ | ~~`feat/dashboard`~~ | ✅ Métricas, gráfico de funil |
 | M09 | Multi-empresa | `feat/multi-workspace` | Workspaces, convites, permissões |
 | M10 | Monetização | `feat/billing` | Stripe, planos, upgrade/downgrade |
 | M11 | Deploy & Polish | `feat/deploy` | Vercel, performance, acessibilidade |
@@ -267,7 +267,7 @@
 - [ ] `app/(app)/dashboard/page.tsx` — grid: 4 metric cards + funnel chart + deadline list
 - [ ] Skeleton loading para cada seção independente
 
-**Commit final:** `feat: dashboard — metric cards, funnel chart, deadline list`
+**Commit final:** `feat: dashboard — metric cards, funnel chart, deadline list` ✅ mergeado em main via PR #8
 
 ---
 
