@@ -1,38 +1,57 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
-const PUBLIC_PATHS = ['/', '/login', '/signup', '/auth/callback', '/invite']
+const PROTECTED_PREFIX = ['/dashboard', '/leads', '/pipeline', '/activities', '/settings']
 
-function isPublicPath(pathname: string) {
-  return PUBLIC_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`)
-  )
+function isProtected(pathname: string) {
+  return PROTECTED_PREFIX.some((p) => pathname === p || pathname.startsWith(p + '/'))
+}
+
+function isAuthPage(pathname: string) {
+  return pathname === '/login' || pathname === '/signup'
 }
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Se as env vars do Supabase não estiverem configuradas, permite tudo (modo mock)
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return NextResponse.next()
-  }
+  // Invite pages always accessible
+  if (pathname.startsWith('/invite/')) return NextResponse.next()
 
   const { supabaseResponse, user } = await updateSession(request)
 
-  const isProtected = !isPublicPath(pathname)
+  // Protected routes: must be authenticated
+  if (isProtected(pathname)) {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('next', pathname)
+      return NextResponse.redirect(url)
+    }
 
-  if (isProtected && !user) {
-    const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/login'
-    loginUrl.searchParams.set('redirectTo', pathname)
-    return NextResponse.redirect(loginUrl)
+    // Authenticated but no active workspace → onboarding
+    const workspaceId = request.cookies.get('pipeflow-workspace-id')?.value
+    if (!workspaceId) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/onboarding'
+      return NextResponse.redirect(url)
+    }
+
+    return supabaseResponse
   }
 
-  // Usuário autenticado tentando acessar login/signup → redireciona para o app
-  if (user && (pathname === '/login' || pathname === '/signup')) {
-    const dashboardUrl = request.nextUrl.clone()
-    dashboardUrl.pathname = '/dashboard'
-    return NextResponse.redirect(dashboardUrl)
+  // Login/signup: authenticated users get redirected
+  if (isAuthPage(pathname) && user) {
+    const workspaceId = request.cookies.get('pipeflow-workspace-id')?.value
+    const url = request.nextUrl.clone()
+    url.pathname = workspaceId ? '/dashboard' : '/onboarding'
+    return NextResponse.redirect(url)
+  }
+
+  // Onboarding: must be authenticated
+  if (pathname === '/onboarding' && !user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse

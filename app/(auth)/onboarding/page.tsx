@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Stepper } from '@/components/onboarding/stepper'
 import { WorkspaceForm } from '@/components/onboarding/workspace-form'
 import { InviteForm } from '@/components/onboarding/invite-form'
+import { createWorkspaceAction } from '@/app/actions/workspace'
+import { createFirstLeadAction } from '@/app/actions/lead'
 
 const STEPS = [
   { label: 'Workspace' },
@@ -35,10 +37,12 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const [workspace, setWorkspace] = useState<WorkspaceData>({ name: '', slug: '' })
   const [invites, setInvites] = useState<Invite[]>([])
   const [lead, setLead] = useState<LeadData>({ name: '', email: '' })
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null)
 
   function canAdvance(): boolean {
     if (step === 0) return workspace.name.trim().length > 0
@@ -47,20 +51,49 @@ export default function OnboardingPage() {
     return false
   }
 
-  function handleNext() {
+  async function handleNext() {
+    setServerError(null)
+
+    if (step === 0) {
+      setLoading(true)
+      const result = await createWorkspaceAction(workspace)
+      setLoading(false)
+      if (result.error) {
+        setServerError(result.error)
+        return
+      }
+      setWorkspaceId(result.workspace!.id)
+      setStep(1)
+      return
+    }
+
     if (step < STEPS.length - 1) {
       setStep((s) => s + 1)
       return
     }
+
     handleFinish()
   }
 
-  function handleFinish() {
+  async function handleFinish() {
     setLoading(true)
-    // Fake: simula um breve delay antes de entrar no CRM
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 800)
+    setServerError(null)
+
+    if (lead.name.trim() && workspaceId) {
+      const result = await createFirstLeadAction({
+        name: lead.name,
+        email: lead.email,
+        workspaceId,
+      })
+      if (result.error) {
+        setServerError(result.error)
+        setLoading(false)
+        return
+      }
+    }
+
+    router.push('/dashboard')
+    router.refresh()
   }
 
   const isLastStep = step === STEPS.length - 1
@@ -87,6 +120,12 @@ export default function OnboardingPage() {
 
         {step === 2 && (
           <Step3Lead data={lead} onChange={setLead} />
+        )}
+
+        {serverError && (
+          <p className="mt-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {serverError}
+          </p>
         )}
 
         <div className="mt-6 flex items-center justify-between gap-3">

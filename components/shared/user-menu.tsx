@@ -14,23 +14,24 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
-const mockUser = {
-  name: 'Graziela Espíndola',
-  email: 'grazy@empresa.com',
-  avatar_url: '',
+interface UserMenuProps {
+  name: string
+  email: string
+  avatarUrl?: string
 }
 
-export function UserMenu() {
+export function UserMenu({ name, email, avatarUrl }: UserMenuProps) {
   const router = useRouter()
 
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
+    document.cookie = 'pipeflow-workspace-id=; path=/; max-age=0'
     router.push('/login')
     router.refresh()
   }
 
-  const initials = mockUser.name
+  const initials = name
     .split(' ')
     .slice(0, 2)
     .map((n) => n[0])
@@ -46,23 +47,19 @@ export function UserMenu() {
         )}
       >
         <Avatar className="h-6 w-6 shrink-0">
-          <AvatarImage src={mockUser.avatar_url} alt={mockUser.name} />
+          <AvatarImage src={avatarUrl} alt={name} />
           <AvatarFallback className="text-xs">{initials}</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-col text-left">
-          <span className="truncate text-sm font-medium leading-none">
-            {mockUser.name}
-          </span>
-          <span className="truncate text-xs text-muted-foreground">
-            {mockUser.email}
-          </span>
+          <span className="truncate text-sm font-medium leading-none">{name}</span>
+          <span className="truncate text-xs text-muted-foreground">{email}</span>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="w-56">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{mockUser.name}</p>
-            <p className="text-xs text-muted-foreground">{mockUser.email}</p>
+            <p className="text-sm font-medium">{name}</p>
+            <p className="text-xs text-muted-foreground">{email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
