@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { Loader2, MailCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,6 +17,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [confirmEmail, setConfirmEmail] = useState<string | null>(null)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -30,21 +31,9 @@ export function AuthForm({ mode }: AuthFormProps) {
       ? (form.elements.namedItem('name') as HTMLInputElement).value
       : null
 
-    // Modo fake: sem credenciais Supabase configuradas, navega diretamente
-    const hasSupabase =
-      process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (!hasSupabase) {
-      setTimeout(() => {
-        router.push(mode === 'signup' ? '/onboarding' : '/dashboard')
-      }, 600)
-      return
-    }
-
     const supabase = createClient()
-
     if (mode === 'signup') {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { full_name: name } },
@@ -54,8 +43,14 @@ export function AuthForm({ mode }: AuthFormProps) {
         setLoading(false)
         return
       }
-      // Após signup redireciona para onboarding (criação de workspace)
-      router.push('/onboarding')
+      // Session exists → autoconfirm enabled, vai direto para onboarding
+      if (data.session) {
+        router.push('/onboarding')
+        return
+      }
+      // Sem session → confirmação de e-mail necessária
+      setConfirmEmail(email)
+      setLoading(false)
       return
     }
 
@@ -68,6 +63,32 @@ export function AuthForm({ mode }: AuthFormProps) {
 
     router.push('/dashboard')
     router.refresh()
+  }
+
+  if (confirmEmail) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="flex justify-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+            <MailCheck className="h-7 w-7 text-primary" />
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="font-medium">Verifique seu e-mail</p>
+          <p className="text-sm text-muted-foreground">
+            Enviamos um link de confirmação para{' '}
+            <span className="font-medium text-foreground">{confirmEmail}</span>.
+            Acesse seu e-mail e clique no link para ativar sua conta.
+          </p>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Já confirmou?{' '}
+          <Link href="/login" className="font-medium text-primary hover:underline">
+            Entrar agora
+          </Link>
+        </p>
+      </div>
+    )
   }
 
   return (

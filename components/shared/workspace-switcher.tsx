@@ -1,6 +1,7 @@
 'use client'
 
-import { ChevronsUpDown, Building2, Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ChevronsUpDown, Building2, Plus, Check } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,14 +11,27 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import type { Plan } from '@/types'
 
-const mockWorkspaces = [
-  { id: '1', name: 'Acme Corp', slug: 'acme-corp', plan: 'pro' as const },
-  { id: '2', name: 'Startup XYZ', slug: 'startup-xyz', plan: 'free' as const },
-]
+interface WorkspaceOption {
+  id: string
+  name: string
+  slug: string
+  plan: Plan
+}
 
-export function WorkspaceSwitcher() {
-  const active = mockWorkspaces[0]
+interface WorkspaceSwitcherProps {
+  activeWorkspace: WorkspaceOption
+  workspaces: WorkspaceOption[]
+}
+
+export function WorkspaceSwitcher({ activeWorkspace, workspaces }: WorkspaceSwitcherProps) {
+  const router = useRouter()
+
+  function switchWorkspace(id: string) {
+    document.cookie = `pipeflow-workspace-id=${id}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`
+    router.refresh()
+  }
 
   return (
     <DropdownMenu>
@@ -32,7 +46,7 @@ export function WorkspaceSwitcher() {
           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-primary/10 text-primary">
             <Building2 className="h-3.5 w-3.5" />
           </div>
-          <span className="truncate">{active.name}</span>
+          <span className="truncate">{activeWorkspace.name}</span>
         </div>
         <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
       </DropdownMenuTrigger>
@@ -40,16 +54,26 @@ export function WorkspaceSwitcher() {
         <DropdownMenuLabel className="text-xs text-muted-foreground">
           Workspaces
         </DropdownMenuLabel>
-        {mockWorkspaces.map((ws) => (
-          <DropdownMenuItem key={ws.id} className="gap-2">
+        {workspaces.map((ws) => (
+          <DropdownMenuItem
+            key={ws.id}
+            className="gap-2"
+            onClick={() => switchWorkspace(ws.id)}
+          >
             <div className="flex h-6 w-6 items-center justify-center rounded bg-primary/10 text-primary">
               <Building2 className="h-3.5 w-3.5" />
             </div>
-            <span className="truncate">{ws.name}</span>
+            <span className="flex-1 truncate">{ws.name}</span>
+            {ws.id === activeWorkspace.id && (
+              <Check className="h-3.5 w-3.5 text-primary" />
+            )}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="gap-2 text-muted-foreground">
+        <DropdownMenuItem
+          className="gap-2 text-muted-foreground"
+          onClick={() => router.push('/onboarding')}
+        >
           <Plus className="h-4 w-4" />
           Criar workspace
         </DropdownMenuItem>
