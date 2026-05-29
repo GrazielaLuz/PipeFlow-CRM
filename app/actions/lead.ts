@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const createLeadSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório').max(200),
@@ -27,7 +28,9 @@ export async function createFirstLeadAction(input: {
     return { error: parsed.error.issues[0].message }
   }
 
-  const { data: lead, error } = await supabase
+  const admin = createAdminClient()
+
+  const { data: lead, error } = await admin
     .from('leads')
     .insert({
       workspace_id: parsed.data.workspaceId,

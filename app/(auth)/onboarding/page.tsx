@@ -62,7 +62,10 @@ export default function OnboardingPage() {
         setServerError(result.error)
         return
       }
-      setWorkspaceId(result.workspace!.id)
+      const wsId = result.workspace!.id
+      // Set cookie client-side immediately so middleware sees it on next navigation
+      document.cookie = `pipeflow-workspace-id=${wsId}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`
+      setWorkspaceId(wsId)
       setStep(1)
       return
     }
@@ -92,8 +95,7 @@ export default function OnboardingPage() {
       }
     }
 
-    router.push('/dashboard')
-    router.refresh()
+    window.location.assign('/dashboard')
   }
 
   const isLastStep = step === STEPS.length - 1

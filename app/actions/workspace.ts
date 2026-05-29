@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const createWorkspaceSchema = z.object({
   name: z.string().min(1).max(100),
@@ -27,7 +28,10 @@ export async function createWorkspaceAction(input: { name: string; slug: string 
     return { error: parsed.error.issues[0].message }
   }
 
-  const { data: workspace, error } = await supabase
+  // Use service role to bypass RLS for initial workspace + member creation
+  const admin = createAdminClient()
+
+  const { data: workspace, error } = await admin
     .from('workspaces')
     .insert({ name: parsed.data.name, slug: parsed.data.slug })
     .select()
@@ -38,7 +42,7 @@ export async function createWorkspaceAction(input: { name: string; slug: string 
     return { error: 'Erro ao criar workspace. Tente novamente.' }
   }
 
-  const { error: memberError } = await supabase.from('workspace_members').insert({
+  const { error: memberError } = await admin.from('workspace_members').insert({
     workspace_id: workspace.id,
     user_id: user.id,
     role: 'admin',
