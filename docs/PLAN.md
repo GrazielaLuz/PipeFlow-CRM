@@ -18,6 +18,7 @@
 | ~~M06~~ | ~~Pipeline Kanban~~ | ~~`feat/pipeline`~~ | ✅ Kanban com drag-and-drop |
 | ~~M07~~ | ~~Atividades~~ | ~~`feat/activities`~~ | ✅ Timeline de atividades por lead |
 | ~~M08~~ | ~~Dashboard~~ | ~~`feat/dashboard`~~ | ✅ Métricas, gráfico de funil |
+| ~~M08.5~~ | ~~Supabase Setup~~ | ~~`feat/supabase-setup`~~ | ✅ Banco real, auth, middleware, RLS |
 | M09 | Multi-empresa | `feat/multi-workspace` | Workspaces, convites, permissões |
 | M10 | Monetização | `feat/billing` | Stripe, planos, upgrade/downgrade |
 | M11 | Deploy & Polish | `feat/deploy` | Vercel, performance, acessibilidade |
@@ -135,9 +136,9 @@
 - [x] `components/onboarding/invite-form.tsx`
 
 **Lógica**
-- [ ] Server Action para criar workspace + inserir usuário como `admin` em `workspace_members` *(pendente — conexão com banco)*
-- [ ] Armazenar `workspace_id` ativo em cookie após criação *(pendente — conexão com banco)*
-- [ ] Middleware lê cookie `workspace_id` e injeta no contexto da sessão *(pendente — conexão com banco)*
+- [x] Server Action para criar workspace + inserir usuário como `admin` em `workspace_members`
+- [x] Armazenar `workspace_id` ativo em cookie após criação
+- [x] Middleware lê cookie `workspace_id` e injeta no contexto da sessão
 
 **Commit final:** `feat: onboarding — wizard 3 passos, migration workspaces (stub UI, sem banco)` ✅ mergeado em main via PR #4
 
@@ -271,6 +272,41 @@
 
 ---
 
+## M08.5 — Supabase Setup & Conexão Real
+
+**Branch:** `feat/supabase-setup`
+**Objetivo:** Conectar o projeto ao Supabase real: aplicar migrations, implementar middleware de sessão, wiring das Server Actions do onboarding e corrigir RLS.
+
+### Entregas
+
+**Banco de dados**
+- [x] Migrations `0001`–`0004` aplicadas no Supabase Studio
+- [x] `supabase/migrations/_combined_0001_0004.sql` — script combinado para execução manual
+- [x] Migration `0005_fix_rls_recursion.sql` — corrige recursão infinita em `workspace_members` SELECT policies com função `get_my_workspace_ids() SECURITY DEFINER`
+
+**Middleware e sessão**
+- [x] `proxy.ts` — lógica completa de proteção de rotas: redireciona `(app)/*` sem sessão para `/login`; redireciona sem cookie `pipeflow-workspace-id` para `/onboarding`; redireciona usuário autenticado em `/login`/`/signup` para `/dashboard` ou `/onboarding`
+
+**Server Actions**
+- [x] `app/actions/workspace.ts` — `createWorkspaceAction`: cria workspace + insere admin em `workspace_members` + seta cookie `pipeflow-workspace-id` (usa service role client para bypass de RLS na criação inicial)
+- [x] `app/actions/lead.ts` — `createFirstLeadAction`: cria primeiro lead no onboarding (usa service role client)
+- [x] `lib/supabase/admin.ts` — client com service role para operações que bypassam RLS server-side
+
+**Componentes atualizados**
+- [x] `app/(app)/layout.tsx` — convertido para Server Component async: lê usuário + workspace do Supabase, redireciona se necessário, passa props reais para WorkspaceSwitcher e UserMenu
+- [x] `app/(auth)/onboarding/page.tsx` — chama Server Actions reais; seta cookie via `document.cookie` client-side após criação do workspace; usa `window.location.assign` para navegação full-page confiável
+- [x] `components/shared/user-menu.tsx` — aceita props `name/email/avatarUrl` do Server Component; limpa cookie no logout
+- [x] `components/shared/workspace-switcher.tsx` — aceita `activeWorkspace` + `workspaces` como props; troca cookie client-side com `router.refresh()`
+- [x] `components/auth/auth-form.tsx` — detecta `session: null` após signup (confirmação de e-mail obrigatória) e exibe estado "Verifique seu e-mail" em vez de redirecionar sem sessão
+
+**Validação**
+- [x] `next build` sem erros de tipo
+- [x] E2E Playwright: 11/11 testes passando — rotas protegidas, login inválido, onboarding completo, UserMenu real, WorkspaceSwitcher real, dashboard com dados do banco
+
+**Commit final:** `fix: supabase-setup — auth-form email confirm, admin client for server actions, RLS recursion` ✅ mergeado em main via PR #9
+
+---
+
 ## M09 — Multi-empresa
 
 **Branch:** `feat/multi-workspace`
@@ -279,7 +315,6 @@
 ### Entregas
 
 **Banco de dados**
-- [ ] Migration `0005_rls_complete.sql` — revisar e completar RLS em todas as tabelas com `workspace_id`
 - [ ] Migration `0006_invites.sql` — tabela `invites` com token único e expiração
 - [ ] Policy: Admin pode inserir/deletar membros; Membro só lê
 
@@ -296,9 +331,9 @@
 - [ ] Bloqueio Free plan: botão de convite desabilitado com tooltip de upgrade quando ≥ 2 membros
 
 **Alternância de workspace**
-- [ ] `WorkspaceSwitcher` totalmente funcional — lista workspaces do usuário, troca o cookie e recarrega
-- [ ] `hooks/use-workspace.ts` — hook de contexto com workspace ativo
-- [ ] Botão "Criar novo workspace" no switcher
+- [x] `WorkspaceSwitcher` totalmente funcional — lista workspaces do usuário, troca o cookie e recarrega *(entregue no feat/supabase-setup)*
+- [x] Botão "Criar novo workspace" no switcher *(entregue no feat/supabase-setup)*
+- [ ] `hooks/use-workspace.ts` — hook de contexto com workspace ativo (cliente)
 
 **Commit final:** `feat: multi-workspace — invites, member management, workspace switching, RLS`
 
