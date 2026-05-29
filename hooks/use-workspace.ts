@@ -1,18 +1,37 @@
 'use client'
 
-// TODO M04: implement with real workspace context from cookie + Supabase
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import type { Workspace } from '@/types'
 
-const mockWorkspace: Workspace = {
-  id: '1',
-  name: 'Acme Corp',
-  slug: 'acme-corp',
-  plan: 'free',
-  created_at: new Date().toISOString(),
+function getWorkspaceIdFromCookie(): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(/(?:^|;\s*)pipeflow-workspace-id=([^;]+)/)
+  return match ? match[1] : null
 }
 
 export function useWorkspace() {
-  const [workspace] = useState<Workspace>(mockWorkspace)
-  return { workspace }
+  const [workspace, setWorkspace] = useState<Workspace | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const workspaceId = getWorkspaceIdFromCookie()
+    if (!workspaceId) {
+      setIsLoading(false)
+      return
+    }
+
+    const supabase = createClient()
+    supabase
+      .from('workspaces')
+      .select('id, name, slug, plan, created_at')
+      .eq('id', workspaceId)
+      .single()
+      .then(({ data }) => {
+        setWorkspace(data as Workspace | null)
+        setIsLoading(false)
+      })
+  }, [])
+
+  return { workspace, isLoading }
 }
