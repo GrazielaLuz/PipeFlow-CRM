@@ -6,6 +6,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { MemberList } from '@/components/settings/member-list'
 import { InviteMemberForm } from '@/components/settings/invite-member-form'
 import { PendingInviteList } from '@/components/settings/pending-invite-list'
+import { LimitBanner } from '@/components/shared/limit-banner'
+import { FREE_LIMITS } from '@/lib/stripe/plans'
 import type { MemberRow } from '@/components/settings/member-list'
 import type { Invite } from '@/types'
 
@@ -85,6 +87,9 @@ export default async function WorkspaceSettingsPage() {
       <TopBar title="Configurações do Workspace" />
       <div className="flex-1 overflow-auto p-6">
         <div className="mx-auto max-w-2xl space-y-4">
+          {workspace.plan === 'free' && (
+            <LimitBanner type="members" current={members.length} max={FREE_LIMITS.members} />
+          )}
           <MemberList
             members={members}
             currentUserId={user.id}

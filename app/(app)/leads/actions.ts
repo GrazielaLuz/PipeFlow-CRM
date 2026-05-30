@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
+import { canAddLead } from '@/lib/limits'
 
 const LeadSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -76,21 +77,8 @@ export async function createLead(
   const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
-  // Cheque de limite Free (50 leads)
-  const { count } = await supabase
-    .from('leads')
-    .select('*', { count: 'exact', head: true })
-    .eq('workspace_id', workspaceId)
-
-  const { data: workspace } = await supabase
-    .from('workspaces')
-    .select('plan')
-    .eq('id', workspaceId)
-    .single()
-
-  if (workspace?.plan === 'free' && (count ?? 0) >= 50) {
-    return { error: 'Limite de 50 leads atingido no plano Free. Faça upgrade para Pro.' }
-  }
+  const limit = await canAddLead(workspaceId)
+  if (!limit.allowed) return { error: limit.reason }
 
   const { error } = await supabase.from('leads').insert({
     ...parsed.data,
