@@ -20,7 +20,7 @@
 | ~~M08~~ | ~~Dashboard~~ | ~~`feat/dashboard`~~ | ✅ Métricas, gráfico de funil |
 | ~~M08.5~~ | ~~Supabase Setup~~ | ~~`feat/supabase-setup`~~ | ✅ Banco real, auth, middleware, RLS |
 | ~~M09~~ | ~~Multi-empresa~~ | ~~`feat/multi-workspace`~~ | ✅ Workspaces, convites, permissões |
-| M10 | Monetização | `feat/billing` | Stripe, planos, upgrade/downgrade |
+| ~~M10~~ | ~~Monetização~~ | ~~`feat/billing`~~ | ✅ Stripe, planos, upgrade/downgrade |
 | M11 | Deploy & Polish | `feat/deploy` | Vercel, performance, acessibilidade |
 
 ---
@@ -349,31 +349,35 @@
 ### Entregas
 
 **Banco de dados**
-- [ ] Migration `0007_subscriptions.sql` — tabela `subscriptions` com RLS
+- [x] Migration `0007_subscriptions.sql` — tabela `subscriptions` com RLS
 
 **Stripe setup**
-- [ ] `lib/stripe/client.ts` — instância do Stripe SDK com chave secreta
-- [ ] `lib/stripe/plans.ts` — constantes: `FREE_LIMITS`, `PRO_PRICE_ID`, `PLAN_FEATURES`
-- [ ] Criar produto e preço no Stripe Dashboard (R$49/mês)
+- [x] `lib/stripe/client.ts` — lazy singleton do Stripe SDK (evita erro no build)
+- [x] `lib/stripe/plans.ts` — constantes: `FREE_LIMITS`, `PRO_PRICE_ID`, `PLAN_FEATURES`
+- [x] Produto e preço criados no Stripe Dashboard (R$49/mês)
 
 **Checkout**
-- [ ] `app/api/billing/checkout/route.ts` — cria Stripe Checkout Session + redirect
-- [ ] `app/api/billing/portal/route.ts` — cria Customer Portal Session + redirect
-- [ ] `app/(app)/settings/billing/page.tsx` — exibe plano atual, uso (leads/membros), botão upgrade/gerenciar
+- [x] `app/api/billing/checkout/route.ts` — cria Stripe Checkout Session + redirect
+- [x] `app/api/billing/portal/route.ts` — cria Customer Portal Session + redirect
+- [x] `app/(app)/settings/billing/page.tsx` — plano atual, barras de uso, comparativo Free vs Pro
+- [x] `app/(app)/settings/layout.tsx` — abas Workspace / Plano & Faturamento
+- [x] `app/(app)/settings/page.tsx` — redirect para `/settings/workspace`
 
 **Webhook**
-- [ ] `app/api/webhooks/stripe/route.ts` — valida assinatura + processa eventos:
+- [x] `app/api/webhooks/stripe/route.ts` — valida assinatura + processa eventos:
   - `checkout.session.completed` → ativa Pro
-  - `customer.subscription.updated` → atualiza status
+  - `customer.subscription.updated` → sincroniza status (past_due mantém Pro)
   - `customer.subscription.deleted` → downgrade para Free
+  - `invoice.payment_failed` → marca past_due sem rebaixar plano
 
 **Enforcement de limites**
-- [ ] `hooks/use-subscription.ts` — retorna plano atual + uso + limites
-- [ ] Server Actions de `createLead` e `inviteMember` verificam limites antes de inserir
-- [ ] `components/shared/upgrade-dialog.tsx` — dialog de upgrade com CTA para checkout
-- [ ] Exibir banner de limite atingido na listagem de leads e no settings de membros
+- [x] `lib/limits.ts` — `canAddLead()` e `canAddMember()` server-side
+- [x] `hooks/use-subscription.ts` — retorna plano atual + uso + limites (client)
+- [x] Server Actions de `createLead` e `inviteMember` verificam limites
+- [x] `components/shared/upgrade-dialog.tsx` — dialog de upgrade com CTA
+- [x] `components/shared/limit-banner.tsx` — banner em leads e settings de membros
 
-**Commit final:** `feat: billing — Stripe checkout, webhook, plan enforcement, customer portal`
+**Commit final:** `feat: M10 — Stripe billing, plan limits, settings page` ✅ mergeado em main via PR #11
 
 ---
 
