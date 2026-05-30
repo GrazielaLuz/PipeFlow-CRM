@@ -5,6 +5,7 @@ import { ChevronsUpDown, Building2, Plus, Check } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -51,32 +52,36 @@ export function WorkspaceSwitcher({ activeWorkspace, workspaces }: WorkspaceSwit
         <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
-          Workspaces
-        </DropdownMenuLabel>
-        {workspaces.map((ws) => (
-          <DropdownMenuItem
-            key={ws.id}
-            className="gap-2"
-            onClick={() => switchWorkspace(ws.id)}
-          >
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary/10 text-primary">
-              <Building2 className="h-3.5 w-3.5" />
-            </div>
-            <span className="flex-1 truncate">{ws.name}</span>
-            {ws.id === activeWorkspace.id && (
-              <Check className="h-3.5 w-3.5 text-primary" />
-            )}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            Workspaces
+          </DropdownMenuLabel>
+          {workspaces.map((ws) => (
+            <DropdownMenuItem
+              key={ws.id}
+              className="gap-2"
+              onClick={() => switchWorkspace(ws.id)}
+            >
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-primary/10 text-primary">
+                <Building2 className="h-3.5 w-3.5" />
+              </div>
+              <span className="flex-1 truncate">{ws.name}</span>
+              {ws.id === activeWorkspace.id && (
+                <Check className="h-3.5 w-3.5 text-primary" />
+              )}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="gap-2 text-muted-foreground"
-          onClick={() => router.push('/onboarding')}
-        >
-          <Plus className="h-4 w-4" />
-          Criar workspace
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="gap-2 text-muted-foreground"
+            onClick={() => router.push('/onboarding')}
+          >
+            <Plus className="h-4 w-4" />
+            Criar workspace
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )
