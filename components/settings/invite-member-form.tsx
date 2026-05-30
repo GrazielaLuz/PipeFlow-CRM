@@ -11,12 +11,6 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 
 interface Props {
   workspaceId: string
@@ -106,26 +100,13 @@ export function InviteMemberForm({ workspaceId, plan, memberCount }: Props) {
             </Select>
           </div>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <span className="w-full sm:w-auto">
-                  <Button
-                    type="submit"
-                    disabled={atLimit || loading}
-                    className="w-full sm:w-auto"
-                  >
-                    {loading ? 'Enviando...' : 'Convidar'}
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              {atLimit && (
-                <TooltipContent>
-                  Limite de 2 membros no plano Free. Faça upgrade para Pro.
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+          <Button
+            type="submit"
+            disabled={atLimit || loading}
+            className="w-full sm:w-auto"
+          >
+            {loading ? 'Enviando...' : 'Convidar'}
+          </Button>
         </div>
 
         {error && <p className="mt-2 text-xs text-destructive">{error}</p>}

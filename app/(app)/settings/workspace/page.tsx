@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { TopBar } from '@/components/shared/top-bar'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { MemberList } from '@/components/settings/member-list'
@@ -84,7 +83,6 @@ export default async function WorkspaceSettingsPage() {
 
   return (
     <>
-      <TopBar title="Configurações do Workspace" />
       <div className="flex-1 overflow-auto p-6">
         <div className="mx-auto max-w-2xl space-y-4">
           {workspace.plan === 'free' && (

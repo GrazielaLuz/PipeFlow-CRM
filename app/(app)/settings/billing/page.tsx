@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { CheckCircle, Users, UserCheck } from 'lucide-react'
-import { TopBar } from '@/components/shared/top-bar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -42,7 +41,6 @@ export default async function BillingPage() {
 
   return (
     <>
-      <TopBar title="Plano & Faturamento" />
       <div className="flex-1 overflow-auto p-6">
         <div className="mx-auto max-w-3xl space-y-6">
 
