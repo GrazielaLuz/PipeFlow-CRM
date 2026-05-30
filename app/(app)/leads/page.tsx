@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { cookies } from 'next/headers'
 import { TopBar } from '@/components/shared/top-bar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LeadTable } from '@/components/leads/lead-table'
@@ -6,7 +7,9 @@ import { LeadFilters } from '@/components/leads/lead-filters'
 import { LeadSearch } from '@/components/leads/lead-search'
 import { LeadPagination } from '@/components/leads/lead-pagination'
 import { NewLeadDialog } from '@/components/leads/new-lead-dialog'
+import { LimitBanner } from '@/components/shared/limit-banner'
 import { filterMockLeads } from '@/lib/mock-data'
+import { FREE_LIMITS } from '@/lib/stripe/plans'
 import { Lead } from '@/types'
 
 const PAGE_SIZE = 20
@@ -90,18 +93,37 @@ async function LeadsContent({ searchParams }: { searchParams: SearchParams }) {
   )
 }
 
+async function getWorkspacePlanAndCount(): Promise<{ plan: 'free' | 'pro'; leadCount: number } | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null
+  const { createClient } = await import('@/lib/supabase/server')
+  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const workspaceId = cookieStore.get('pipeflow-workspace-id')?.value
+  if (!workspaceId) return null
+  const [{ data: ws }, { count }] = await Promise.all([
+    supabase.from('workspaces').select('plan').eq('id', workspaceId).single(),
+    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('workspace_id', workspaceId),
+  ])
+  if (!ws) return null
+  return { plan: ws.plan as 'free' | 'pro', leadCount: count ?? 0 }
+}
+
 export default async function LeadsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
+  const planInfo = await getWorkspacePlanAndCount()
 
   return (
     <>
       <TopBar title="Leads" actions={<NewLeadDialog />} />
       <div className="flex-1 overflow-auto p-6">
         <div className="space-y-4">
+          {planInfo?.plan === 'free' && (
+            <LimitBanner type="leads" current={planInfo.leadCount} max={FREE_LIMITS.leads} />
+          )}
           <div className="flex flex-wrap items-center gap-3">
             <Suspense>
               <LeadSearch />

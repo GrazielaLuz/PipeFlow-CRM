@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendInviteEmail } from '@/lib/resend/emails'
+import { canAddMember } from '@/lib/limits'
 
 const inviteSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -51,18 +52,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Workspace não encontrado' }, { status: 404 })
   }
 
-  if (workspace.plan === 'free') {
-    const { count } = await supabase
-      .from('workspace_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('workspace_id', workspaceId)
-
-    if ((count ?? 0) >= 2) {
-      return NextResponse.json(
-        { error: 'Limite de 2 membros atingido no plano Free. Faça upgrade para Pro.' },
-        { status: 403 }
-      )
-    }
+  const limit = await canAddMember(workspaceId)
+  if (!limit.allowed) {
+    return NextResponse.json({ error: limit.reason }, { status: 403 })
   }
 
   // Verificar se já é membro

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Loader2, Rocket } from 'lucide-react'
+import { ArrowRight, Loader2, LogOut, Rocket } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import { WorkspaceForm } from '@/components/onboarding/workspace-form'
 import { InviteForm } from '@/components/onboarding/invite-form'
 import { createWorkspaceAction } from '@/app/actions/workspace'
 import { createFirstLeadAction } from '@/app/actions/lead'
+import { createClient } from '@/lib/supabase/client'
 
 const STEPS = [
   { label: 'Workspace' },
@@ -36,6 +37,35 @@ interface LeadData {
 export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { setChecking(false); return }
+      const { data } = await supabase
+        .from('workspace_members')
+        .select('workspace_id')
+        .eq('user_id', user.id)
+        .order('workspace_id')
+        .limit(1)
+      if (data?.[0]?.workspace_id) {
+        document.cookie = `pipeflow-workspace-id=${data[0].workspace_id}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax`
+        window.location.href = '/dashboard'
+        return
+      }
+      setChecking(false)
+    })
+  }, [])
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    document.cookie = 'pipeflow-workspace-id=; path=/; max-age=0'
+    window.location.href = '/login'
+  }
+
+  if (checking) return null
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
@@ -107,6 +137,13 @@ export default function OnboardingPage() {
         <p className="text-sm text-muted-foreground">
           Leva menos de 2 minutos. Você pode ajustar tudo depois.
         </p>
+      </div>
+
+      <div className="flex justify-end">
+        <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={handleSignOut}>
+          <LogOut className="h-3.5 w-3.5" />
+          Sair
+        </Button>
       </div>
 
       <Stepper steps={STEPS} currentStep={step} />

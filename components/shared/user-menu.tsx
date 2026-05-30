@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -56,22 +57,28 @@ export function UserMenu({ name, email, avatarUrl }: UserMenuProps) {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{name}</p>
-            <p className="text-xs text-muted-foreground">{email}</p>
-          </div>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium">{name}</p>
+              <p className="text-xs text-muted-foreground">{email}</p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="gap-2">
-          <User className="h-4 w-4" />
-          Perfil
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem className="gap-2">
+            <User className="h-4 w-4" />
+            Perfil
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" className="gap-2" onClick={handleSignOut}>
-          <LogOut className="h-4 w-4" />
-          Sair
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem variant="destructive" className="gap-2" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4" />
+            Sair
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )
