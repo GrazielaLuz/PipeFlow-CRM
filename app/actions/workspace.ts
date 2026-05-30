@@ -61,3 +61,40 @@ export async function createWorkspaceAction(input: { name: string; slug: string 
 
   return { workspace }
 }
+
+export async function removeMemberAction(input: { workspaceId: string; userId: string }) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  // Impede remover a si mesmo
+  if (input.userId === user.id) {
+    return { error: 'Você não pode remover a si mesmo do workspace.' }
+  }
+
+  // Verificar que o usuário atual é admin
+  const { data: membership } = await supabase
+    .from('workspace_members')
+    .select('role')
+    .eq('workspace_id', input.workspaceId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!membership || membership.role !== 'admin') {
+    return { error: 'Apenas administradores podem remover membros.' }
+  }
+
+  const admin = createAdminClient()
+  const { error } = await admin
+    .from('workspace_members')
+    .delete()
+    .eq('workspace_id', input.workspaceId)
+    .eq('user_id', input.userId)
+
+  if (error) return { error: 'Erro ao remover membro.' }
+
+  return { success: true }
+}
