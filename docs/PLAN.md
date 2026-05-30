@@ -19,7 +19,7 @@
 | ~~M07~~ | ~~Atividades~~ | ~~`feat/activities`~~ | ✅ Timeline de atividades por lead |
 | ~~M08~~ | ~~Dashboard~~ | ~~`feat/dashboard`~~ | ✅ Métricas, gráfico de funil |
 | ~~M08.5~~ | ~~Supabase Setup~~ | ~~`feat/supabase-setup`~~ | ✅ Banco real, auth, middleware, RLS |
-| M09 | Multi-empresa | `feat/multi-workspace` | Workspaces, convites, permissões |
+| ~~M09~~ | ~~Multi-empresa~~ | ~~`feat/multi-workspace`~~ | ✅ Workspaces, convites, permissões |
 | M10 | Monetização | `feat/billing` | Stripe, planos, upgrade/downgrade |
 | M11 | Deploy & Polish | `feat/deploy` | Vercel, performance, acessibilidade |
 
@@ -315,27 +315,29 @@
 ### Entregas
 
 **Banco de dados**
-- [ ] Migration `0006_invites.sql` — tabela `invites` com token único e expiração
-- [ ] Policy: Admin pode inserir/deletar membros; Membro só lê
+- [x] Migration `0006_invites.sql` — tabela `invites` com token único e expiração
+- [x] Policy: Admin pode inserir/deletar membros; Membro só lê
 
 **Convite de colaboradores**
-- [ ] `app/api/invites/route.ts` — POST gera token + envia e-mail via Resend
-- [ ] `lib/resend/emails.ts` — template de e-mail de convite
-- [ ] `app/(auth)/invite/[token]/page.tsx` — página de aceite do convite
-- [ ] Server Action para validar token + adicionar usuário ao workspace
+- [x] `app/api/invites/route.ts` — POST gera token + envia e-mail via Resend; DELETE cancela convite
+- [x] `lib/resend/emails.ts` — template de e-mail de convite
+- [x] `app/(auth)/invite/[token]/page.tsx` — página de aceite com estados: inválido, expirado, e-mail divergente, aceite
+- [x] `app/actions/invite.ts` — `acceptInviteAction`: valida token, adiciona membro, seta cookie, redireciona
 
 **Gerenciamento de membros**
-- [ ] `app/(app)/settings/workspace/page.tsx` — lista de membros com papel e opção de remover
-- [ ] `components/settings/member-list.tsx`
-- [ ] `components/settings/invite-member-form.tsx` — campo e-mail + select de papel
-- [ ] Bloqueio Free plan: botão de convite desabilitado com tooltip de upgrade quando ≥ 2 membros
+- [x] `app/(app)/settings/workspace/page.tsx` — lista de membros + formulário de convite + convites pendentes
+- [x] `components/settings/member-list.tsx` — tabela com avatar, badge de papel, RemoveMemberDialog
+- [x] `components/settings/invite-member-form.tsx` — campo e-mail + select de papel
+- [x] `components/settings/pending-invite-list.tsx` — convites pendentes com expiração e cancelamento
+- [x] Bloqueio Free plan: botão de convite desabilitado com tooltip de upgrade quando ≥ 2 membros
+- [x] `app/actions/workspace.ts` — `removeMemberAction` (guard anti-self-remove)
 
 **Alternância de workspace**
-- [x] `WorkspaceSwitcher` totalmente funcional — lista workspaces do usuário, troca o cookie e recarrega *(entregue no feat/supabase-setup)*
-- [x] Botão "Criar novo workspace" no switcher *(entregue no feat/supabase-setup)*
-- [ ] `hooks/use-workspace.ts` — hook de contexto com workspace ativo (cliente)
+- [x] `WorkspaceSwitcher` totalmente funcional — lista workspaces do usuário, troca o cookie e recarrega
+- [x] Botão "Criar novo workspace" no switcher
+- [x] `hooks/use-workspace.ts` — hook de contexto com workspace ativo via cookie + Supabase real
 
-**Commit final:** `feat: multi-workspace — invites, member management, workspace switching, RLS`
+**Commit final:** `feat: multi-workspace — invites, member management, workspace switching, RLS` ✅ mergeado em main via PR #10
 
 ---
 
