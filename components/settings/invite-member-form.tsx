@@ -10,7 +10,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select'
 import {
   Tooltip,
@@ -98,7 +97,7 @@ export function InviteMemberForm({ workspaceId, plan, memberCount }: Props) {
               disabled={atLimit || loading}
             >
               <SelectTrigger id="invite-role" className="mt-1">
-                <SelectValue />
+                {role === 'admin' ? 'Admin' : 'Membro'}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="member">Membro</SelectItem>
